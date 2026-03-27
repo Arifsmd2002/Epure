@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --bg-admin: #F8F9FA;
+            --text-admin: #212529;
+            --primary-admin: #1F1F1F;
+            --accent-admin: #D2C4B0;
+            --white: #FFFFFF;
+        }
+
+        * { margin:0; padding:0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-admin); color: var(--text-admin); display: flex; }
+
+        .sidebar { width: var(--sidebar-width); height: 100vh; background: var(--white); border-right: 1px solid rgba(0,0,0,0.05); padding: 40px 20px; position: fixed; }
+        .logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 50px; padding: 0 15px; }
+        .nav-link { display: flex; align-items: center; gap: 15px; padding: 12px 15px; border-radius: 8px; text-decoration: none; color: #6c757d; font-size: 0.9rem; font-weight: 500; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { background: var(--bg-admin); color: var(--primary-admin); }
+
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 60px 50px; width: calc(100% - var(--sidebar-width)); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .title { font-size: 1.8rem; font-weight: 700; }
+
+        .table-container { background: var(--white); border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #FAF9F6; text-align: left; padding: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: #6c757d; }
+        td { padding: 20px; border-top: 1px solid rgba(0,0,0,0.03); font-size: 0.9rem; }
+        
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-ORDER_PLACED { background: #e3f2fd; color: #1565c0; }
+        .status-PROCESSING { background: #fff3e0; color: #e65100; }
+        .status-SHIPPED { background: #e8f5e9; color: #2e7d32; }
+        .status-OUT_FOR_DELIVERY { background: #fff8e1; color: #f57f17; }
+        .status-DELIVERED { background: #f3e5f5; color: #6a1b9a; }
+
+        .search-bar { display: inline-flex; gap: 10px; align-items: center; }
+        .search-bar input { padding: 10px 15px; border-radius: 6px; border: 1px solid #ddd; outline: none; font-size: 0.9rem; min-width: 250px; }
+        .search-bar button { padding: 10px 15px; background: var(--primary-admin); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+        
+        select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; outline: none; font-size: 0.8rem; }
+        .btn-update { padding: 8px 15px; background: var(--primary-admin); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">ÉPURE<span style="color:var(--accent-admin);">.</span></div>
+        <ul style="list-style: none;">
+            <li style="margin-bottom: 5px;"><a href="/admin" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li style="margin-bottom: 5px;"><a href="/admin/products" class="nav-link"><i class="fa-solid fa-couch"></i> Products</a></li>
+            <li style="margin-bottom: 5px;"><a href="/admin/orders" class="nav-link active"><i class="fa-solid fa-cart-flatbed"></i> Orders</a></li>
+            <li style="margin-bottom: 5px; margin-top: 50px;"><a href="/" class="nav-link"><i class="fa-solid fa-arrow-left"></i> Studio Site</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header" style="justify-content: space-between;">
+            <h1 class="title">Manage Studio Orders</h1>
+            <form action="/admin/orders" method="get" class="search-bar">
+                <input type="text" name="search" placeholder="Search by Order # or Email..." th:value="${param.search}">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td>
+                            <p style="font-weight: 600;" th:text="'#' + ${order.id}">#1</p>
+                            <p style="font-size: 0.7rem; color: #6c757d;" th:text="${#temporals.format(order.createdAt, 'MMM d, HH:mm')}">Date</p>
+                        </td>
+                        <td>
+                            <p th:text="${order.firstName + ' ' + order.lastName}">Name</p>
+                            <p style="font-size: 0.7rem; color: #6c757d;" th:text="${order.email}">Email</p>
+                        </td>
+                        <td>
+                            <p th:text="${order.items.size() + ' items'}">0 items</p>
+                        </td>
+                        <td th:text="'₹' + ${order.totalAmount}">₹0.00</td>
+                        <td>
+                            <span class="badge" th:classappend="'status-' + ${order.orderStatus}" th:text="${order.orderStatus}">Status</span>
+                        </td>
+                        <td>
+                            <form action="/admin/orders/update-status" method="post" style="display: flex; gap: 10px;">
+                                <input type="hidden" name="orderId" th:value="${order.id}">
+                                <select name="status">
+                                    <option value="ORDER_PLACED" th:selected="${order.orderStatus == 'ORDER_PLACED'}">ORDER_PLACED</option>
+                                    <option value="PROCESSING" th:selected="${order.orderStatus == 'PROCESSING'}">PROCESSING</option>
+                                    <option value="SHIPPED" th:selected="${order.orderStatus == 'SHIPPED'}">SHIPPED</option>
+                                    <option value="OUT_FOR_DELIVERY" th:selected="${order.orderStatus == 'OUT_FOR_DELIVERY'}">OUT_FOR_DELIVERY</option>
+                                    <option value="DELIVERED" th:selected="${order.orderStatus == 'DELIVERED'}">DELIVERED</option>
+                                </select>
+                                <button type="submit" class="btn-update">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${orders.empty}">
+                        <td colspan="6" style="text-align: center; padding: 50px;">No orders have been placed yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

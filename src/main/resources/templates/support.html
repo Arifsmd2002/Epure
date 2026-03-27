@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Customer Support | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Support Header -->
+        <header style="padding: 160px 10% 80px; text-align: center; background: var(--bg-primary);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3.5rem; margin-bottom: 25px;">How Can We Assist?</h1>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">Our support team is here to help you create your perfect sanctuary. Reach out to us for design advice, order tracking, or assistance with your Scandinavian pieces.</p>
+            </div>
+        </header>
+
+        <!-- FAQ & Support Contact -->
+        <section style="padding: 100px 10%; background: var(--white); display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start;">
+            <div data-aos="fade-right">
+                <h2 style="font-size: 2.2rem; margin-bottom: 50px;">Frequently Asked Questions</h2>
+                <div style="display: grid; gap: 40px;">
+                    <div>
+                        <h4 style="font-weight: 600; margin-bottom: 10px;">What is your shipping policy?</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">We offer free carbon-neutral shipping on all furniture orders within Scandinavia and major European cities. Delivery typically takes 4-10 business days.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 600; margin-bottom: 10px;">How do I care for my oak furniture?</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Keep your pieces clean with a soft, lint-free cloth. We recommend applying our natural furniture oil twice a year to maintain the wood's luster and protection.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 600; margin-bottom: 10px;">Do you provide design consultations?</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Yes, we offer complimentary virtual design consultations with our Nordic design experts. Reach out via the form to book your session.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 600; margin-bottom: 10px;">How is the sustainability score calculated?</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Our scores are independently audited based on raw material origin, carbon footprint during production, fair labor practices, and recyclability of the piece.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div data-aos="fade-left" style="background: var(--bg-secondary); padding: 50px; border-radius: var(--radius-lg);">
+                <h2 style="font-size: 2.2rem; margin-bottom: 40px;">Get in Touch</h2>
+                <form action="/support/contact" method="post" style="display: grid; gap: 25px;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Your Name</label>
+                        <input type="text" placeholder="Erik Sorenson" style="width: 100%; padding: 15px 20px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: var(--white); outline: none;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Your Email</label>
+                        <input type="email" placeholder="erik@example.com" style="width: 100%; padding: 15px 20px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: var(--white); outline: none;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Message</label>
+                        <textarea placeholder="How can we help you today?" style="width: 100%; height: 150px; padding: 15px 20px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: var(--white); outline: none;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 60px; background: var(--text-primary); color: var(--white); font-weight: 600; margin-top: 20px;">Send Message</button>
+                    <p style="text-align: center; font-size: 0.8rem; color: var(--text-secondary); margin-top: 20px;">Average response time: 24 hours.</p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Live Support Banner -->
+        <section style="padding: 80px 10%; background: var(--bg-tertiary); text-align: center;">
+            <div data-aos="fade-up">
+                <i class="fa-solid fa-headset" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 30px;"></i>
+                <h2 style="font-size: 2rem; margin-bottom: 20px;">Speak with a Design Specialist</h2>
+                <p style="margin-bottom: 30px; font-size: 1.1rem; color: var(--text-secondary);">Available Monday — Friday, 9am — 6pm Oslo Time.</p>
+                <a href="javascript:void(0)" onclick="toggleSupportChat()" class="btn btn-primary" style="background: #2b1f18; color: #d8b892; padding: 15px 50px;">Start Live Chat</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

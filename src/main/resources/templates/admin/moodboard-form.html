@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title th:text="${title}">Add Moodboard | ÉPURE Admin</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main style="padding: 120px 10% 60px;">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div style="margin-bottom: 40px;">
+                <a th:href="@{/admin/moodboards}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;"><i class="fa-solid fa-arrow-left"></i> Back to Moodboards</a>
+                <h1 style="font-size: 2.5rem; margin-top: 20px;" th:text="${title}">Add New Moodboard</h1>
+            </div>
+
+            <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.05);">
+                <form th:action="@{/admin/moodboards/save}" th:object="${moodboard}" method="post">
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Moodboard Name</label>
+                        <input type="text" th:field="*{name}" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Cover Image URL</label>
+                        <input type="text" th:field="*{imageUrl}" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 40px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Description</label>
+                        <textarea th:field="*{description}" rows="3" style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 40px;">
+                        <label style="display: block; margin-bottom: 20px; font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #f0edea; padding-bottom: 10px;">Curated Products</label>
+                        <p style="color: #8e7d6a; font-size: 0.85rem; margin-bottom: 20px;">Select the products that appear in this scene.</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #f0edea; border-radius: 12px;">
+                            <div th:each="product : ${products}" style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #fafaf9; border-radius: 8px;">
+                                <input type="checkbox" name="selectedProducts" th:value="${product.id}" style="width: 18px; height: 18px; accent-color: #2b1f18;">
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <img th:src="${product.imageUrl}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 4px;">
+                                    <span th:text="${product.name}" style="font-size: 0.85rem; font-weight: 500; color: #2b1f18;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; background: #2b1f18; color: white; border: none; font-size: 1.1rem; font-weight: 600;">Save Moodboard</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

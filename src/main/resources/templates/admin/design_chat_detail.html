@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Chat with User | Admin</title>
+</head>
+<body style="background: var(--bg-primary);">
+    <div th:replace="~{admin/dashboard :: admin-nav}"></div>
+
+    <main style="margin-left: 280px; padding: 40px; display: flex; flex-direction: column; height: 100vh;">
+        <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a th:href="@{/admin/design-chat}" style="color: var(--text-primary);"><i class="fa-solid fa-arrow-left"></i></a>
+                <div>
+                    <h1 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 0;" th:text="'Consultation: ' + ${chatSession.userEmail}">Chat</h1>
+                    <p style="color: var(--text-secondary); margin: 5px 0 0 0;" th:text="'Session ID: #' + ${chatSession.id}">#ID</p>
+                </div>
+            </div>
+            <form th:action="@{'/admin/design-chat/complete/' + ${chatSession.id}}" method="post">
+                <button type="submit" class="btn" style="background: #059669; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">Mark as Completed</button>
+            </form>
+        </div>
+
+        <div style="flex: 1; background: var(--white); border-radius: 24px; box-shadow: var(--shadow-medium); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 20px;">
+            <!-- Message Area -->
+            <div id="admin-chat-area" style="flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: #fafaf9;">
+                <div th:each="msg : ${messages}" th:class="${msg.senderType == 'ADMIN' ? 'msg-admin' : 'msg-user'}" 
+                     th:style="${msg.senderType == 'ADMIN' ? 'align-self: flex-end; max-width: 70%;' : 'align-self: flex-start; max-width: 70%;'}">
+                    
+                    <div th:style="${msg.senderType == 'ADMIN' ? 
+                         'background: #1a1a1a; color: white; padding: 15px 20px; border-radius: 18px 18px 4px 18px; box-shadow: var(--shadow-small);' : 
+                         'background: white; color: #1a1a1a; padding: 15px 20px; border-radius: 18px 18px 18px 4px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--shadow-small);'}">
+                        
+                        <p style="margin: 0; font-size: 0.95rem;" th:text="${msg.messageText}">Text</p>
+                        
+                        <!-- Attachments -->
+                        <div th:if="${not #lists.isEmpty(msg.attachments)}" style="margin-top: 10px; display: grid; gap: 10px;">
+                            <img th:each="att : ${msg.attachments}" th:src="${att.fileUrl}" style="max-width: 100%; border-radius: 12px; cursor: pointer;" 
+                                 onclick="window.open(this.src)">
+                        </div>
+                    </div>
+                    <p style="font-size: 0.72rem; color: #999; margin-top: 5px; text-align: right;" 
+                       th:text="${msg.createdAt}">Time</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div style="padding: 25px 30px; background: white; border-top: 1px solid rgba(0,0,0,0.05);">
+                <div style="display: flex; gap: 15px; align-items: flex-end;">
+                    <div style="flex: 1; position: relative;">
+                        <textarea id="admin-reply-input" placeholder="Compose your response..." 
+                                  style="width: 100%; padding: 15px 50px 15px 20px; border: 1px solid rgba(0,0,0,0.1); border-radius: 16px; background: #fdfaf6; outline: none; font-size: 0.95rem; resize: none; overflow: hidden; height: 52px; transition: all 0.3s;"></textarea>
+                        <input type="file" id="admin-file-input" style="display: none;" accept="image/*">
+                        <button onclick="document.getElementById('admin-file-input').click()" 
+                                style="position: absolute; right: 15px; bottom: 12px; background: none; border: none; color: #8e7d6a; cursor: pointer; font-size: 1.2rem; transition: 0.3s;" onmouseover="this.style.color='var(--text-primary)'">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <button id="admin-send-btn" 
+                            style="background: var(--text-primary); color: white; border: none; width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;"
+                            onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-2px)'"
+                            onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)'">
+                         <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script th:inline="javascript">
+        const sessionId = /*[[${chatSession.id}]]*/ 0;
+        const chatArea = document.getElementById('admin-chat-area');
+        const replyInput = document.getElementById('admin-reply-input');
+        const sendBtn = document.getElementById('admin-send-btn');
+        const fileInput = document.getElementById('admin-file-input');
+
+        // Scroll to bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        // Auto-expand textarea
+        replyInput.addEventListener('input', () => {
+            replyInput.style.height = 'auto';
+            replyInput.style.height = replyInput.scrollHeight + 'px';
+        });
+
+        async function sendReply() {
+            const text = replyInput.value.trim();
+            if (!text) return;
+
+            const params = new URLSearchParams();
+            params.append('sessionId', sessionId);
+            params.append('text', text);
+
+            try {
+                const response = await fetch('/admin/design-chat/reply', { method: 'POST', body: params });
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (err) { alert('Failed to send reply'); }
+        }
+
+        async function uploadFile() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('sessionId', sessionId);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/admin/design-chat/upload', { method: 'POST', body: formData });
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (err) { alert('Upload failed'); }
+        }
+
+        sendBtn.addEventListener('click', sendReply);
+        fileInput.addEventListener('change', uploadFile);
+        replyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendReply();
+            }
+        });
+    </script>
+</body>
+</html>

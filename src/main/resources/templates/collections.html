@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Collections | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Collections Hero -->
+        <section class="collections-hero" style="background: var(--bg-secondary); padding: 120px 10% 60px; text-align: center;">
+            <div data-aos="fade-up">
+                <h1 style="font-size: 3.5rem; margin-bottom: 20px;">The Collections</h1>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">Explore our curated selection of Nordic furniture and decor, organized by design intention and category.</p>
+            </div>
+        </section>
+
+        <!-- Category Grid -->
+        <section class="category-showcase" style="padding: 60px 10%; margin-bottom: 100px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px;">
+                
+                <!-- Lighting -->
+                <div class="collection-card" data-aos="fade-up" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer; group;">
+                    <img src="/images/products/lamp.png" alt="Lighting" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Lighting</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Sculptural pieces that illuminate and inspire.</p>
+                        <a href="/shop?category=Lighting" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+                <!-- Seating -->
+                <div class="collection-card" data-aos="fade-up" data-aos-delay="100" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer;">
+                    <img src="/images/products/chair.png" alt="Seating" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Seating</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Comfort-focused designs for every corner of your home.</p>
+                        <a href="/shop?category=Seating" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+                <!-- Decor -->
+                <div class="collection-card" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer;">
+                    <img src="/images/products/vase.png" alt="Decor" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Decor</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Minimalist objects that define the atmosphere.</p>
+                        <a href="/shop?category=Decor" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+                <!-- Tables -->
+                <div class="collection-card" data-aos="fade-up" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer;">
+                    <img src="/images/products/table.png" alt="Tables" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Tables</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Central gathering pieces for the modern home.</p>
+                        <a href="/shop?category=Tables" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+                <!-- Textiles & Pillows -->
+                <div class="collection-card" data-aos="fade-up" data-aos-delay="100" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer;">
+                    <img src="/images/products/forest_green_pillow.png" alt="Textiles" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Textiles & Pillows</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Layered textures for warmth and softness.</p>
+                        <a href="/shop?category=Pillows" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+                <!-- Storage -->
+                <div class="collection-card" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 500px; overflow: hidden; border-radius: var(--radius-lg); cursor: pointer;">
+                    <img src="/images/gallery/dressing.png" alt="Storage" style="width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth);">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px;">Storage</h2>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px;">Functional elegance for an organized life.</p>
+                        <a href="/shop?category=Storage" class="btn btn-primary" style="align-self: flex-start; background: white; color: var(--text-primary); border: none;">Explore Collection</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Lifestyle Call to Action -->
+        <section style="padding: 100px 10%; background: #2b1f18; color: #d8b892; text-align: center; border-radius: 40px; margin: 0 5% 100px;">
+            <div data-aos="zoom-in">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 20px;">Design Your Sanctuary</h2>
+                <p style="max-width: 600px; margin: 0 auto 40px; opacity: 0.8;">Can't decide on a single piece? Explore our curated moodboards to see how our collections come together in harmony.</p>
+                <a th:href="@{/moodboards}" class="btn btn-primary" style="background: #d8b892; color: #2b1f18; padding: 15px 40px; font-weight: 600;">View Designer Moodboards</a>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        .collection-card:hover img {
+            transform: scale(1.05);
+        }
+        .collection-card .btn {
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        .collection-card:hover .btn {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</body>
+</html>

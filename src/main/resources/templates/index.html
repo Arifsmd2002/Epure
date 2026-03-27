@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>ÉPURE | Premium Nordic Living</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-slider">
+                <div class="hero-slide active" style="background-image: url('/images/hero/hero1.png');"></div>
+                <div class="hero-slide" style="background-image: url('/images/hero/hero2.png');"></div>
+                <div class="hero-slide" style="background-image: url('/images/hero/hero3.png');"></div>
+                <div class="hero-overlay"></div>
+            </div>
+            
+            <div class="hero-content">
+                <h1 data-aos="fade-down">Design Your Space with ÉPURE</h1>
+                <p data-aos="fade-up" data-aos-delay="300">Curated furniture and decor designed to create calm, minimalist living spaces inspired by Scandinavian serenity.</p>
+                <div class="hero-btns" data-aos="fade-up" data-aos-delay="600">
+                    <a th:href="@{/collections}" class="btn btn-primary">Explore Collections</a>
+                    <a th:href="@{/shop}" class="btn btn-secondary">Shop Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lifestyle Search Section -->
+        <section class="lifestyle-search" style="padding: 100px 10%; text-align: center; background: var(--bg-secondary);">
+            <div data-aos="fade-up">
+                <h2 style="margin-bottom: 30px; font-size: 2.2rem;">What Vibe Are You Seeking?</h2>
+                <div class="search-container" style="max-width: 700px; margin: 0 auto; position: relative;">
+                    <form th:action="@{/shop}" method="get">
+                        <input type="text" name="query" placeholder="e.g., 'Cozy evening reading nook' or 'Bright morning minimal workspace'" 
+                               style="width: 100%; padding: 25px 40px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); 
+                                      font-size: 1.1rem; box-shadow: var(--shadow-soft); outline: none;">
+                        <button type="submit" style="position: absolute; right: 10px; top: 10px; padding: 15px 30px; 
+                                                     border-radius: 40px; background: var(--text-primary); color: var(--white); 
+                                                     border: none; cursor: pointer; font-weight: 500;">Search</button>
+                    </form>
+                </div>
+                <div class="vibe-tags" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
+                    <a href="/shop?vibe=warm" class="tag" style="padding: 10px 20px; background: var(--white); border-radius: 30px; font-size: 0.85rem; color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.05); transition: var(--transition-smooth);">Warm</a>
+                    <a href="/shop?vibe=minimal" class="tag" style="padding: 10px 20px; background: var(--white); border-radius: 30px; font-size: 0.85rem; color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.05); transition: var(--transition-smooth);">Minimal</a>
+                    <a href="/shop?vibe=nordic" class="tag" style="padding: 10px 20px; background: var(--white); border-radius: 30px; font-size: 0.85rem; color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.05); transition: var(--transition-smooth);">Nordic</a>
+                    <a href="/shop?vibe=bright" class="tag" style="padding: 10px 20px; background: var(--white); border-radius: 30px; font-size: 0.85rem; color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.05); transition: var(--transition-smooth);">Bright</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collections / Moodboards -->
+        <section id="collections" class="collections">
+            <div class="collections-header" data-aos="fade-up">
+                <h2>The Moodboard Collection</h2>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Visualize your perfect space with our curated designer sets. Each moodboard represents a complete interior harmony.</p>
+            </div>
+            
+            <div class="moodboard-grid">
+                <div class="moodboard-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="/images/moodboards/morning_set.png" alt="Stockholm Morning Set" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3>Stockholm Morning Set</h3>
+                        <p>Soft light, neutral textures, and calm beginnings.</p>
+                        <a href="/moodboard/stockholm-morning-set" class="btn-view-scene" style="margin-top: 20px; padding: 10px 30px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+                
+                <div class="moodboard-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="/images/moodboards/reading_nook.png" alt="Nordic Reading Nook" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3>Nordic Reading Nook</h3>
+                        <p>Cozy corners for focus and tranquility.</p>
+                        <a href="/moodboard/nordic-reading-nook" class="btn-view-scene" style="margin-top: 20px; padding: 10px 30px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+
+                <div class="moodboard-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="/images/moodboards/minimalist_loft.png" alt="Minimal Living Space" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3>Minimal Living Space</h3>
+                        <p>Essential design for sophisticated living.</p>
+                        <a href="/moodboard/nordic-living-sanctuary" class="btn-view-scene" style="margin-top: 20px; padding: 10px 30px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+
+                <div class="moodboard-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="/images/moodboard_morning.png" alt="Scandinavian Calm Bedroom" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3>Scandinavian Calm Bedroom</h3>
+                        <p>Serenity for your most private sanctuary.</p>
+                        <a href="/moodboard/calm-bedroom" class="btn-view-scene" style="margin-top: 20px; padding: 10px 30px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+
+                <div class="moodboard-card" data-aos="fade-up" data-aos-delay="500">
+                    <img src="/images/moodboards/olive_living_room.png" alt="Olive Living Room Moodboard" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3>Olive Living Room Moodboard</h3>
+                        <p>A modern olive-green living space combining warm textures.</p>
+                        <a href="/moodboard/olive-living-room" class="btn-view-scene" style="margin-top: 20px; padding: 10px 30px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section id="shop" class="featured-products">
+            <div class="collections-header" data-aos="fade-up">
+                <h2>Curated Essentials</h2>
+                <p style="color: var(--text-secondary);">Minimal pieces that define a room.</p>
+            </div>
+            
+            <div class="product-grid">
+                <div class="product-card" data-product-id="1" data-category="lighting" data-aos="fade-up">
+                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="product-image-container">
+                        <img src="/images/products/lamp.png" alt="Nordic Table Lamp" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">Lighting</p>
+                        <h3 class="product-title">Nordic Table Lamp</h3>
+                        <p class="product-price">₹249.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" value="1">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="product-card" data-product-id="2" data-category="decor" data-aos="fade-up" data-aos-delay="100">
+                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="product-image-container">
+                        <img src="/images/products/vase.png" alt="Minimal Ceramic Vase" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">Decor</p>
+                        <h3 class="product-title">Minimal Ceramic Vase</h3>
+                        <p class="product-price">₹85.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" value="2">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-id="3" data-category="seating" data-aos="fade-up" data-aos-delay="200">
+                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="product-image-container">
+                        <img src="/images/products/chair.png" alt="Beige Lounge Chair" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">Seating</p>
+                        <h3 class="product-title">Beige Lounge Chair</h3>
+                        <p class="product-price">₹1,299.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" value="3">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-id="4" data-category="tables" data-aos="fade-up" data-aos-delay="300">
+                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="product-image-container">
+                        <img src="/images/products/table.png" alt="Oak Coffee Table" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category">Tables</p>
+                        <h3 class="product-title">Oak Coffee Table</h3>
+                        <p class="product-price">₹750.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" value="4">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;" data-aos="fade-up">
+                <button id="viewAllBtn" class="btn btn-view-all" onclick="openViewAllModal()">
+                    <span>View All</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- View All Modal Overlay -->
+        <div id="viewAllModal" class="view-all-modal">
+            <div class="modal-backdrop" onclick="closeViewAllModal()"></div>
+            <div class="modal-container">
+                <div class="modal-header">
+                    <div>
+                        <p class="modal-subtitle">Our Complete Collection</p>
+                        <h2 class="modal-title">Featured Design Pieces</h2>
+                    </div>
+                    <button class="modal-close-btn" onclick="closeViewAllModal()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="modal-product-grid">
+                    <!-- Card 1: Nordic Table Lamp -->
+                    <div class="modal-product-card" data-product-id="1" data-category="lighting">
+                        <div class="modal-wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                        <div class="modal-product-image-container">
+                            <img src="/images/products/lamp.png" alt="Nordic Table Lamp" class="modal-product-image" onerror="this.closest('.modal-product-image-container').style.display='none'">
+                            <div class="modal-quick-view">Quick View</div>
+                        </div>
+                        <div class="modal-product-info">
+                            <p class="modal-product-category">Lighting</p>
+                            <h3 class="modal-product-title">Nordic Table Lamp</h3>
+                            <p class="modal-product-desc">Solid light oak with hand-blown matte glass</p>
+                            <div class="modal-product-footer">
+                                <p class="modal-product-price">₹249.00</p>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="productId" value="1">
+                                    <button type="submit" class="modal-add-to-cart">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2: Beige Lounge Chair -->
+                    <div class="modal-product-card" data-product-id="3" data-category="seating">
+                        <div class="modal-wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                        <div class="modal-product-image-container">
+                            <img src="/images/products/chair.png" alt="Beige Lounge Chair" class="modal-product-image" onerror="this.closest('.modal-product-image-container').style.display='none'">
+                            <div class="modal-quick-view">Quick View</div>
+                        </div>
+                        <div class="modal-product-info">
+                            <p class="modal-product-category">Seating</p>
+                            <h3 class="modal-product-title">Beige Lounge Chair</h3>
+                            <p class="modal-product-desc">Premium linen upholstery with ash wood frame</p>
+                            <div class="modal-product-footer">
+                                <p class="modal-product-price">₹1,299.00</p>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="productId" value="3">
+                                    <button type="submit" class="modal-add-to-cart">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3: Soft Beige Cushion -->
+                    <div class="modal-product-card" data-product-id="18" data-category="pillows">
+                        <div class="modal-wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                        <div class="modal-product-image-container">
+                            <img src="/images/products/beige_cushion.png" alt="Soft Beige Cushion" class="modal-product-image" onerror="this.closest('.modal-product-image-container').style.display='none'">
+                            <div class="modal-quick-view">Quick View</div>
+                        </div>
+                        <div class="modal-product-info">
+                            <p class="modal-product-category">Pillows</p>
+                            <h3 class="modal-product-title">Soft Beige Cushion</h3>
+                            <p class="modal-product-desc">Textured linen blend cushion in warm beige</p>
+                            <div class="modal-product-footer">
+                                <p class="modal-product-price">₹60.00</p>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="productId" value="18">
+                                    <button type="submit" class="modal-add-to-cart">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4: Minimal Ceramic Vase -->
+                    <div class="modal-product-card" data-product-id="2" data-category="decor">
+                        <div class="modal-wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                        <div class="modal-product-image-container">
+                            <img src="/images/products/vase.png" alt="Minimal Ceramic Vase" class="modal-product-image" onerror="this.closest('.modal-product-image-container').style.display='none'">
+                            <div class="modal-quick-view">Quick View</div>
+                        </div>
+                        <div class="modal-product-info">
+                            <p class="modal-product-category">Decor</p>
+                            <h3 class="modal-product-title">Minimal Ceramic Vase</h3>
+                            <p class="modal-product-desc">Hand-sculpted matte plaster with organic curves</p>
+                            <div class="modal-product-footer">
+                                <p class="modal-product-price">₹85.00</p>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="productId" value="2">
+                                    <button type="submit" class="modal-add-to-cart">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <a th:href="@{/shop}" class="modal-browse-all-link">Browse Full Collection &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openViewAllModal() {
+                var modal = document.getElementById('viewAllModal');
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                var cards = modal.querySelectorAll('.modal-product-card');
+                cards.forEach(function(card, i) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(40px)';
+                    setTimeout(function() {
+                        card.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 150 + i * 120);
+                });
+            }
+
+            function closeViewAllModal() {
+                var modal = document.getElementById('viewAllModal');
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeViewAllModal();
+            });
+        </script>
+
+        <!-- Sustainability / Traceability Section -->
+        <section class="traceability" style="background: var(--bg-tertiary); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+            <div data-aos="fade-right">
+                <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: var(--text-secondary); margin-bottom: 20px;">Ethos</h4>
+                <h2 style="font-size: 2.8rem; margin-bottom: 30px;">Conscious Craftsmanship</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 1.1rem;">At ÉPURE, we believe beauty shouldn't cost the Earth. Every piece in our collection is traced from forest to floor, ensuring a 9/10 minimum sustainability score and fair labor practices in every Norwegian and Swedish workshop.</p>
+                <div class="stats" style="display: flex; gap: 40px; margin-bottom: 40px;">
+                    <div>
+                        <h3 style="font-size: 2rem;">9/10</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">Avg. Sustainability Score</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 2rem;">100%</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">FSC Certified Wood</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 2rem;">Norway</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">Primary Origin</p>
+                    </div>
+                </div>
+                <a href="/about" class="btn btn-primary" style="display: inline-block; background: var(--text-primary); color: var(--white);">Learn Our Process</a>
+            </div>
+            <div style="position: relative;" data-aos="fade-left">
+                <img src="/images/hero/hero2.png" alt="Craftsmanship" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-medium);">
+                <div style="position: absolute; bottom: -30px; left: -30px; background: var(--white); padding: 30px; border-radius: var(--radius-md); box-shadow: var(--shadow-medium); max-width: 250px;">
+                    <p style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 10px;">"Quality is not an act, it is a habit."</p>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">— Nordic Design Philosophy</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Our Story | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- About Hero -->
+        <section class="about-hero" style="padding: 150px 10% 100px; background: #fafaf9; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+            <div data-aos="fade-right">
+                <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: #8e7d6a; margin-bottom: 20px;">Est. 2024</h4>
+                <h1 style="font-size: 3.5rem; margin-bottom: 30px; line-height: 1.1;">The Art of Living Simply.</h1>
+                <p style="font-size: 1.2rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 30px;">ÉPURE was born from a singular vision: to bring the quiet serenity of Scandinavian landscapes into the modern home. We believe that a well-designed space is the foundation of a peaceful mind.</p>
+            </div>
+            <div data-aos="fade-left" style="position: relative;">
+                <img src="/images/hero/hero1.png" alt="ÉPURE Vision" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-medium);">
+                <div style="position: absolute; -bottom: 40px; -left: 40px; background: #2b1f18; color: #d8b892; padding: 40px; border-radius: var(--radius-md); max-width: 300px;">
+                    <p style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic;">"Design is not just what it looks like; it's how it makes you feel."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Values -->
+        <section style="padding: 100px 10%; text-align: center;">
+            <div data-aos="fade-up">
+                <h2 style="font-size: 2.5rem; margin-bottom: 60px;">Guided by Nordic Principles</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px;">
+                    <div>
+                        <div style="font-size: 2.5rem; margin-bottom: 20px; color: #8e7d6a;"><i class="fa-solid fa-leaf"></i></div>
+                        <h3 style="margin-bottom: 15px;">Sustainability</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Every piece of wood is FSC certified, and our textiles are sourced from ethical weavers who prioritize the planet.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; margin-bottom: 20px; color: #8e7d6a;"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <h3 style="margin-bottom: 15px;">Craftsmanship</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">We collaborate with family-owned workshops in Norway and Sweden, where decades of tradition meet modern precision.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; margin-bottom: 20px; color: #8e7d6a;"><i class="fa-solid fa-wind"></i></div>
+                        <h3 style="margin-bottom: 15px;">Minimalism</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">We strip away the noise to find the essential beauty of raw materials, creating timeless objects that transcend trends.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Process -->
+        <section style="padding: 100px 5%; background: #2b1f18; color: white; border-radius: 60px; margin: 0 5% 100px;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;">
+                    <div data-aos="fade-right">
+                        <img src="/images/hero/hero2.png" alt="The Process" style="width: 100%; border-radius: var(--radius-md);">
+                    </div>
+                    <div data-aos="fade-left">
+                        <h2 style="font-size: 2.8rem; margin-bottom: 30px; font-family: 'Playfair Display', serif;">Curated to Perfection.</h2>
+                        <p style="opacity: 0.8; line-height: 1.8; margin-bottom: 30px;">Our curation process is rigorous. We don't just sell furniture; we design scenes. Every item in our collection is tested for its "vibe" — ensuring it can ground a room and provide a sense of calm from the moment it's placed.</p>
+                        <div style="display: flex; gap: 30px;">
+                            <div>
+                                <h4 style="font-size: 2rem; color: #d8b892;">100%</h4>
+                                <p style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase;">Natural Materials</p>
+                            </div>
+                            <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                            <div>
+                                <h4 style="font-size: 2rem; color: #d8b892;">0.1%</h4>
+                                <p style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase;">Waste Target</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section style="padding: 100px 10%; text-align: center;">
+            <div data-aos="zoom-in">
+                <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Join the ÉPURE Community</h2>
+                <p style="max-width: 600px; margin: 0 auto 40px; color: var(--text-secondary);">Sign up for our newsletter to receive design tips, early access to new collections, and a look behind the scenes of our workshops.</p>
+                <div style="max-width: 500px; margin: 0 auto; display: flex; gap: 10px;">
+                    <input type="email" placeholder="Your email address" style="flex: 1; padding: 15px 25px; border-radius: 30px; border: 1px solid rgba(0,0,0,0.1); outline: none;">
+                    <button class="btn btn-primary" style="background: #2b1f18; color: white;">Subscribe</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Design Consultations | Admin</title>
+</head>
+<body style="background: var(--bg-primary); display: flex;">
+    <div th:replace="~{admin/dashboard :: admin-nav}"></div>
+
+    <main style="margin-left: 280px; flex: 1; padding: 60px 5% 60px;">
+        <!-- Header Section -->
+        <div style="margin-bottom: 40px;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; color: var(--text-primary);">Design Consultation Requests</h1>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 30px;">Manage conversations with users seeking interior design advice.</p>
+            
+            <!-- Statistics Row -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03);">
+                    <span style="font-size: 0.8rem; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Total Requests</span>
+                    <p style="font-size: 2rem; font-weight: 700; margin-top: 10px; color: var(--text-primary);" th:text="${totalRequests}">0</p>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03);">
+                    <span style="font-size: 0.8rem; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Active Chats</span>
+                    <p style="font-size: 2rem; font-weight: 700; margin-top: 10px; color: #1e7e34;" th:text="${activeChats}">0</p>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03);">
+                    <span style="font-size: 0.8rem; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Closed Consultations</span>
+                    <p style="font-size: 2rem; font-weight: 700; margin-top: 10px; color: #6c757d;" th:text="${closedConsultations}">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Support Table Container -->
+        <div style="background: white; border-radius: 24px; box-shadow: var(--shadow-medium); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                    <thead style="background: #fafaf9; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <tr>
+                            <th style="padding: 25px 30px; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8e7d6a;">User Email</th>
+                            <th style="padding: 25px 30px; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8e7d6a;">Started Date</th>
+                            <th style="padding: 25px 30px; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8e7d6a;">Status</th>
+                            <th style="padding: 25px 30px; text-align: center; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8e7d6a;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${sessions}" style="transition: all 0.3s; border-bottom: 1px solid rgba(0,0,0,0.03);" onmouseover="this.style.background='#fdfaf6'" onmouseout="this.style.background='transparent'">
+                            <td style="padding: 25px 30px;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div th:text="${s.userEmail != null && !s.userEmail.isEmpty() ? #strings.substring(s.userEmail,0,1).toUpperCase() : '?'}" 
+                                         style="width: 45px; height: 45px; border-radius: 50%; background: #f0edea; color: #5c4d3e; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">A</div>
+                                    <a th:href="'mailto:' + ${s.userEmail}" style="font-weight: 600; color: var(--text-primary); text-decoration: none;" th:text="${s.userEmail}">user@example.com</a>
+                                </div>
+                            </td>
+                            <td style="padding: 25px 30px; color: var(--text-secondary); font-size: 0.9rem;">
+                                Started: <span th:text="${s.createdAt}">March 13, 2026</span>
+                            </td>
+                            <td style="padding: 25px 30px;">
+                                <span th:if="${s.status == 'OPEN'}" style="background: #e6f4ea; color: #1e7e34; padding: 8px 16px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">ACTIVE</span>
+                                <span th:if="${s.status == 'COMPLETED'}" style="background: #f0f0f0; color: #6c757d; padding: 8px 16px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">CLOSED</span>
+                                <span th:if="${s.status != 'OPEN' && s.status != 'COMPLETED'}" style="background: #fff4e6; color: #d97706; padding: 8px 16px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">PENDING</span>
+                            </td>
+                            <td style="padding: 25px 30px; text-align: center;">
+                                <a th:href="@{'/admin/design-chat/' + ${s.id}}" 
+                                   class="btn-open-convo"
+                                   style="display: inline-block; padding: 12px 24px; background: #2b1f18; color: #d8b892; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-decoration: none; box-shadow: 0 4px 15px rgba(43, 31, 24, 0.2); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                                   Open Conversation
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${sessions.empty}">
+                            <td colspan="4" style="padding: 100px; text-align: center; color: var(--text-secondary);">
+                                <i class="fa-solid fa-inbox" style="font-size: 3rem; margin-bottom: 20px; display: block; opacity: 0.2;"></i>
+                                No design consultation requests found.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .btn-open-convo:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(43, 31, 24, 0.35);
+            background: #3b2a22;
+        }
+        
+        @media (max-width: 992px) {
+            main {
+                margin-left: 0 !important;
+                padding: 40px 2.5% !important;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            tr {
+                display: block;
+                padding: 20px;
+                border-bottom: 2px solid #fafaf9;
+            }
+            td {
+                display: block;
+                padding: 10px 0 !important;
+                border: none !important;
+                text-align: left !important;
+            }
+            thead {
+                display: none;
+            }
+        }
+    </style>
+</body>
+</html>

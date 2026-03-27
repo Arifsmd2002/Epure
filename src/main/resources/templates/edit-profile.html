@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Edit Profile | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <header style="padding: 160px 5% 60px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3.5rem; margin-bottom: 15px;">Refine Your Profile</h1>
+                <p style="color: var(--text-secondary);">Update your curated identity.</p>
+            </div>
+        </header>
+
+        <section style="padding: 80px 10%; background: var(--bg-primary); min-height: 60vh;">
+            <div style="max-width: 600px; margin: 0 auto; background: var(--white); padding: 50px; border-radius: 24px; box-shadow: var(--shadow-medium);" data-aos="fade-up">
+                
+                <form th:action="@{/account/edit}" method="post">
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600;">First Name</label>
+                        <input type="text" name="firstName" th:value="${user.firstName}" required style="width: 100%; padding: 15px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; font-family: inherit; outline: none; transition: 0.3s; background: rgba(0,0,0,0.02);">
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600;">Last Name</label>
+                        <input type="text" name="lastName" th:value="${user.lastName}" required style="width: 100%; padding: 15px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; font-family: inherit; outline: none; transition: 0.3s; background: rgba(0,0,0,0.02);">
+                    </div>
+
+                    <div style="margin-bottom: 35px;">
+                        <label style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600;">Email Address</label>
+                        <input type="email" name="email" th:value="${user.email}" required style="width: 100%; padding: 15px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; font-family: inherit; outline: none; transition: 0.3s; background: rgba(0,0,0,0.02);">
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 2; background: var(--text-primary); color: var(--white); border: none; padding: 15px; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Save Changes</button>
+                        <a href="/account" class="btn" style="flex: 1; text-align: center; border: 1px solid rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; text-decoration: none; color: var(--text-primary); text-transform: uppercase; font-size: 0.9rem;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

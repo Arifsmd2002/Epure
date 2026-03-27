@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Secure Payment | ÉPURE</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body style="background: #f8f9fa; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh;">
+    <div style="text-align: center;">
+        <h2 style="font-weight: 300; margin-bottom: 20px;">Connecting to Secure Payment Gateway...</h2>
+        <div style="width: 40px; height: 40px; border: 3px solid #ddd; border-top-color: #1F1F1F; border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto;"></div>
+    </div>
+
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+    <script th:inline="javascript">
+        var options = {
+            "key": "[[${@environment.getProperty('razorpay.key.id')}]]", // Fetches from properties
+            "amount": "[[${order.totalAmount * 100}]]", 
+            "currency": "INR",
+            "name": "ÉPURE Studio",
+            "description": "Premium Curated Selection",
+            "order_id": "[[${razorpayOrderId}]]",
+            "handler": function (response){
+                window.location.href = "/payment/success?paymentId=" + response.razorpay_payment_id + 
+                                       "&orderId=" + response.razorpay_order_id + 
+                                       "&signature=" + response.razorpay_signature +
+                                       "&dbOrderId=[[${order.id}]]";
+            },
+            "prefill": {
+                "name": "[[${user.firstName + ' ' + user.lastName}]]",
+                "email": "[[${user.email}]]"
+            },
+            "theme": {
+                "color": "#1F1F1F"
+            },
+            "modal": {
+                "ondismiss": function(){
+                    window.location.href = "/checkout?error=payment_cancelled";
+                }
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response){
+            window.location.href = "/checkout?error=payment_failed";
+        });
+        rzp1.open();
+    </script>
+</body>
+</html>

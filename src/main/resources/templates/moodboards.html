@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Moodboards | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Moodboard Header -->
+        <header style="padding: 160px 10% 80px; text-align: center; background: var(--bg-primary);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 4.5rem; margin-bottom: 25px;">Design Your Silence</h1>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; font-size: 1.25rem;">Curated scenes designed to create calm, minimalist living spaces. Visualize complete room harmonies rather than individual products.</p>
+            </div>
+        </header>
+
+        <!-- Moodboard Grid -->
+        <section style="padding: 100px 5%; background: var(--bg-secondary);">
+            <div class="moodboard-grid">
+                <div class="moodboard-card" th:each="moodboard : ${moodboards}" data-aos="fade-up">
+                    <img th:src="${moodboard.imageUrl}" th:alt="${moodboard.name}" class="moodboard-img">
+                    <div class="moodboard-content">
+                        <h3 th:text="${moodboard.name}">Moodboard Name</h3>
+                        <p th:text="${moodboard.description}">Description</p>
+                        <a th:href="@{'/moodboard/' + ${moodboard.slug}}" class="btn-view-scene" style="margin-top: 20px; padding: 12px 35px; background: var(--white); color: var(--text-primary); text-decoration: none; display: inline-block; border-radius: 8px; font-weight: 600;">VIEW SCENE</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery / Creative Ethos -->
+        <section style="padding: 120px 10%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+            <div data-aos="fade-right">
+                <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: var(--text-secondary); margin-bottom: 20px;">The Studio</h4>
+                <h2 style="font-size: 2.8rem; margin-bottom: 30px;">Curated for Harmony</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 30px; line-height: 1.8;">Our designers don't just pick products; they compose atmospheres. Every moodboard is a study in texture, light, and geometry, aimed at reducing the noise of modern life and creating a sanctuary of calm.</p>
+                <div style="padding: 30px; border-left: 2px solid var(--accent); background: var(--bg-secondary); border-radius: 0 16px 16px 0;">
+                    <p style="font-family: 'Playfair Display', serif; font-size: 1.25rem; font-style: italic;">"A room should feel as if it were carved out of silence."</p>
+                    <p style="margin-top: 15px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">— Studio Director</p>
+                </div>
+            </div>
+            <div data-aos="fade-left">
+                <img src="/images/hero/hero1.png" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-medium);">
+            </div>
+        </section>
+    </main>
+</body>
+</html>

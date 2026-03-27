@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Order History | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <header style="padding: 160px 5% 60px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3.5rem; margin-bottom: 15px;">Your Curated History</h1>
+                <p style="color: var(--text-secondary);">Review your past sanctuary selections.</p>
+            </div>
+        </header>
+
+        <section style="padding: 80px 10%; background: var(--bg-primary); min-height: 60vh;">
+            <div style="max-width: 1000px; margin: 0 auto;" data-aos="fade-up">
+                
+                <div th:if="${orders.empty}" style="text-align: center; padding: 60px; background: white; border-radius: 24px; box-shadow: var(--shadow-medium);">
+                    <i class="fa-solid fa-box-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 15px;">No Orders Yet</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 30px;">You haven't added any pieces to your sanctuary yet.</p>
+                    <a href="/shop" class="btn btn-primary" style="background: var(--text-primary); color: var(--white); padding: 15px 40px; border: none;">Explore Collection</a>
+                </div>
+
+                <div th:unless="${orders.empty}" style="background: white; border-radius: 24px; box-shadow: var(--shadow-medium); overflow: hidden;">
+                    <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr 1.5fr 1.5fr 1fr; gap: 15px; padding: 25px 30px; background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); font-weight: 600;">
+                        <div>Order ID</div>
+                        <div>Date</div>
+                        <div>Total</div>
+                        <div>Payment</div>
+                        <div>Status</div>
+                        <div style="text-align: center;">Action</div>
+                    </div>
+                    
+                    <div th:each="order : ${orders}" style="display: grid; grid-template-columns: 1fr 2fr 1.5fr 1.5fr 1.5fr 1fr; gap: 15px; padding: 25px 30px; border-bottom: 1px solid rgba(0,0,0,0.05); align-items: center; font-size: 0.9rem;">
+                        <div style="font-weight: 600;" th:text="'#' + ${order.id}">#1</div>
+                        <div th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy')}">Jan 01, 2026</div>
+                        <div style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">₹0.00</div>
+                        <div th:text="${order.paymentMethod}">UPI</div>
+                        <div>
+                            <span th:if="${order.orderStatus == 'ORDER_PLACED'}" style="padding: 5px 12px; background: #e3f2fd; color: #1565c0; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Placed</span>
+                            <span th:if="${order.orderStatus == 'PROCESSING'}" style="padding: 5px 12px; background: #fff3e0; color: #e65100; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Processing</span>
+                            <span th:if="${order.orderStatus == 'SHIPPED'}" style="padding: 5px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Shipped</span>
+                            <span th:if="${order.orderStatus == 'OUT_FOR_DELIVERY'}" style="padding: 5px 12px; background: #fff8e1; color: #f57f17; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Out for Delivery</span>
+                            <span th:if="${order.orderStatus == 'DELIVERED'}" style="padding: 5px 12px; background: #f3e5f5; color: #6a1b9a; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Delivered</span>
+                        </div>
+                        <div style="text-align: center;">
+                            <a th:href="@{/track-order}" class="btn" style="border: 1px solid var(--text-primary); padding: 8px 15px; font-size: 0.8rem;">Track</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

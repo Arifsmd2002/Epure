@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title th:text="${moodboard.name}">Moodboard Detail</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}" th:with="hideNav=true">
+    <main>
+        <!-- Full Screen Scene -->
+        <section style="height: 100vh; position: relative; padding: 0; overflow: hidden;">
+            <div class="scene-container" style="width: 100%; height: 100%; position: relative;">
+                <img th:src="${moodboard.imageUrl}" th:alt="${moodboard.name}" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.9);">
+                
+                <!-- Hotspots (Only for Olive Living Room) -->
+                <div th:if="${#strings.contains(moodboard.name, 'Olive')}" class="hotspots-overlay" style="position: absolute; inset: 0; z-index: 5;">
+                    <!-- Sofa -->
+                    <div class="hotspot" style="top: 60%; left: 45%;" onclick="scrollToProduct('Olive Modular Sofa')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Modular Sofa</div>
+                    </div>
+                    <!-- Pillows -->
+                    <div class="hotspot" style="top: 55%; left: 35%;" onclick="scrollToProduct('Beige Cushion Pillow')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Beige Cushion</div>
+                    </div>
+                    <div class="hotspot" style="top: 58%; left: 55%;" onclick="scrollToProduct('Red Accent Pillow')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Accent Pillow</div>
+                    </div>
+                    <!-- Tables -->
+                    <div class="hotspot" style="top: 75%; left: 40%;" onclick="scrollToProduct('Black Round Coffee Table')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Coffee Table</div>
+                    </div>
+                    <!-- Chair -->
+                    <div class="hotspot" style="top: 65%; left: 15%;" onclick="scrollToProduct('Red Lounge Chair')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Red Lounge Chair</div>
+                    </div>
+                    <!-- Decor -->
+                    <div class="hotspot" style="top: 30%; left: 25%;" onclick="scrollToProduct('Woven Wall Decor')">
+                        <span class="hotspot-pulse"></span>
+                        <div class="hotspot-label">Wall Decor</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: absolute; bottom: 80px; left: 80px; color: var(--white); text-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10;" data-aos="fade-right">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <a th:href="@{/moodboards}" style="color: white; font-size: 1.5rem;"><i class="fa-solid fa-arrow-left"></i></a>
+                    <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin: 0;">Curated Designer Set</h4>
+                </div>
+                <h1 style="font-size: 4.5rem; margin-bottom: 25px;" th:text="${moodboard.name}">Moodboard Name</h1>
+                <p style="font-size: 1.25rem; max-width: 600px; opacity: 0.9; margin-bottom: 30px;" th:text="${moodboard.description}">Description</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="#products-in-scene" class="btn btn-primary" style="padding: 15px 40px; background: var(--white); color: var(--text-primary); border: none;">View Shop the Room</a>
+                    <a th:href="@{/shop}" class="btn btn-secondary" style="padding: 15px 40px; border-color: white; color: white;">Browse Full Shop</a>
+                </div>
+            </div>
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(rgba(0,0,0,0.1), transparent); z-index: 1;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(transparent, rgba(0,0,0,0.3)); z-index: 1;"></div>
+        </section>
+
+        <!-- Products in Scene Section -->
+        <section id="products-in-scene" style="padding: 100px 10%; background: var(--bg-primary);">
+            <div class="collections-header" data-aos="fade-up">
+                <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; color: #8e7d6a; margin-bottom: 10px;">The Breakdown</h4>
+                <h2 style="font-size: 3rem; margin-bottom: 20px;">Products in this Scene</h2>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">Every element has been selected for its material integrity and aesthetic harmony. Click a hotspot above to jump to a specific piece.</p>
+            </div>
+            
+            <div class="product-grid" style="margin-top: 60px;">
+                <div class="product-card" th:each="product : ${moodboard.products}" 
+                     th:id="'product-' + ${#strings.replace(product.name, ' ', '-')}"
+                     th:data-product-id="${product.id}" 
+                     th:data-category="${#strings.toLowerCase(product.category.name)}" 
+                     data-aos="fade-up">
+                    <div class="product-image-container">
+                        <a th:href="@{'/product/' + ${product.id}}">
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image">
+                        </a>
+                        <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category" th:text="${#strings.toUpperCase(product.category.name)}">CATEGORY</p>
+                        <h3 class="product-title" th:text="${product.name}">Product Name</h3>
+                        <p class="product-price" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹0.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 80px;" data-aos="fade-up">
+                <a th:href="@{/moodboards}" class="btn btn-secondary" style="border-color: var(--text-primary); color: var(--text-primary);">Back to Moodboards</a>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        .hotspot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .hotspot-pulse {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .hotspot:hover .hotspot-pulse {
+            background: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+        .hotspot-label {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2b1f18;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .hotspot:hover .hotspot-label {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .highlight-card {
+            outline: 3px solid #d8b892;
+            outline-offset: 5px;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <script>
+        function scrollToProduct(productName) {
+            const id = 'product-' + productName.replace(/ /g, '-');
+            const element = document.getElementById(id);
+            if (element) {
+                // Remove highlight from any other cards
+                document.querySelectorAll('.product-card').forEach(card => card.classList.remove('highlight-card'));
+                
+                // Add highlight
+                element.classList.add('highlight-card');
+                
+                // Scroll to element
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Remove highlight after a delay
+                setTimeout(() => {
+                    element.classList.remove('highlight-card');
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

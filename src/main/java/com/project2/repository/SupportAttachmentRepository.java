@@ -1,0 +1,7 @@
+package com.project2.repository;
+
+import com.project2.entity.SupportAttachment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SupportAttachmentRepository extends JpaRepository<SupportAttachment, Long> {
+}

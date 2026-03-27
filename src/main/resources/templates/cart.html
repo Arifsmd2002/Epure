@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Shopping Cart | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Cart Header -->
+        <header style="padding: 140px 5% 40px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3rem; margin-bottom: 15px;">Your Cart</h1>
+                <p style="color: var(--text-secondary);">Minimal pieces for a meaningful home.</p>
+            </div>
+        </header>
+
+        <section style="padding: 60px 10%; background: var(--bg-primary);">
+            <div th:if="${cart.empty}" style="text-align: center; padding: 100px 0;" data-aos="fade-up">
+                <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; color: var(--bg-tertiary); margin-bottom: 30px;"></i>
+                <h2 style="font-size: 2rem; color: var(--text-secondary);">Your cart is empty.</h2>
+                <a th:href="@{/shop}" class="btn btn-primary" style="margin-top: 40px; padding: 15px 40px; background: var(--text-primary); color: var(--white);">Return to Studio</a>
+            </div>
+
+            <div th:unless="${cart.empty}" style="display: grid; grid-template-columns: 1fr 400px; gap: 60px; align-items: start;">
+                <!-- Cart Items -->
+                <div data-aos="fade-right">
+                    <div th:each="item : ${cart}" style="display: grid; grid-template-columns: 120px 1fr 150px; gap: 30px; align-items: center; padding: 30px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <img th:src="${item.product.imageUrl}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 12px;">
+                        <div>
+                            <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 5px;" th:text="${item.product.category.name}">Category</p>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 10px;" th:text="${item.product.name}">Product Name</h3>
+                            <a th:href="@{'/cart/remove/' + ${item.id}}" style="font-size: 0.8rem; text-decoration: underline; color: #dc3545;">Remove</a>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 15px;" th:text="'₹' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">₹0.00</p>
+                            <form th:action="@{/cart/update}" method="post">
+                                <input type="hidden" name="id" th:value="${item.id}">
+                                <input type="number" name="quantity" th:value="${item.quantity}" min="1" onchange="this.form.submit()" style="width: 60px; padding: 8px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; text-align: center;">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Panel -->
+                <div data-aos="fade-left" style="background: var(--bg-secondary); padding: 40px; border-radius: var(--radius-lg); position: sticky; top: 120px;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 30px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 20px;">Order Summary</h3>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-secondary);">
+                        <span>Subtotal</span>
+                        <span th:text="'₹' + ${#numbers.formatDecimal(subtotal, 1, 2)}">₹0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-secondary);">
+                        <span>Shipping (Simulated)</span>
+                        <span>Free</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px; color: var(--text-secondary);">
+                        <span>Estimated Tax (10%)</span>
+                        <span th:text="'₹' + ${#numbers.formatDecimal(tax, 1, 2)}">₹0.00</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 40px; font-size: 1.5rem; font-weight: 700; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                        <span>Total</span>
+                        <span th:text="'₹' + ${#numbers.formatDecimal(total, 1, 2)}">₹0.00</span>
+                    </div>
+                    
+                    <a href="/checkout" class="btn btn-primary" style="width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; background: var(--text-primary); color: var(--white); font-weight: 600;">Proceed to Checkout</a>
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" style="height: 20px; opacity: 0.5; filter: grayscale(1);">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

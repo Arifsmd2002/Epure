@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Login | ÉPURE</title>
+</head>
+<body style="background: var(--bg-primary); font-family: 'Inter', sans-serif;">
+    <main style="display: flex; height: 100vh; align-items: center; justify-content: center; padding: 20px;">
+        <div data-aos="zoom-in" style="background: var(--white); width: 100%; max-width: 450px; padding: 60px 50px; border-radius: 24px; box-shadow: var(--shadow-medium); text-align: center;">
+            <div class="logo" style="margin-bottom: 30px; font-size: 2.2rem; font-family: 'Playfair Display', serif;"><a th:href="@{/}">ÉPURE</a></div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 40px; font-weight: 700;">Welcome back to your sanctuary.</h2>
+            
+            <form th:action="@{/login}" method="post" style="display: grid; gap: 20px; text-align: left;">
+                <div th:if="${param.error}" style="padding: 15px; background: #fee2e2; color: #dc2626; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;">
+                    Invalid username or password. Please try again.
+                </div>
+                <div th:if="${param.logout}" style="padding: 15px; background: #ecfdf5; color: #059669; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;">
+                    You have been logged out successfully.
+                </div>
+                <div th:if="${param.registered}" style="padding: 15px; background: #ecfdf5; color: #059669; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;">
+                    🎉 Account created! Please sign in to continue.
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Username</label>
+                    <input type="text" name="username" placeholder="erik_sorenson" required style="width: 100%; padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Password</label>
+                    <input type="password" name="password" placeholder="••••••••" required style="width: 100%; padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none;">
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="remember" style="accent-color: var(--primary-admin);">
+                        <label for="remember" style="font-size: 0.85rem; color: var(--text-secondary);">Remember me</label>
+                    </div>
+                    <a href="#" style="font-size: 0.85rem; color: var(--text-secondary); text-decoration: underline;">Forgot?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 60px; background: var(--text-primary); color: var(--white); font-weight: 600; font-size: 1rem;">Sign In</button>
+            </form>
+            
+            <p style="margin-top: 40px; color: var(--text-secondary); font-size: 0.9rem;">New to ÉPURE? <a href="/register" style="font-weight: 600; color: var(--text-primary);">Create your account</a></p>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>AOS.init({ duration: 1000, once: true });</script>
+</body>
+</html>

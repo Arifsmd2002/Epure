@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title th:text="${title}">Shop</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <!-- Page Header & Search -->
+        <header class="search-header">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3.5rem; margin-bottom: 20px;">The Collection</h1>
+                <p style="color: var(--warm-cream); opacity: 0.8; max-width: 600px; margin: 0 auto;">Refined Scandinavian design, curated for your home. Explore our range of furniture, lighting, and essentials.</p>
+                
+                <div class="luxury-search-bar">
+                    <form th:action="@{/shop}" method="get" style="width: 100%; display: flex;">
+                        <input type="text" name="query" class="luxury-search-input" placeholder="Search for your next piece..." th:value="${searchQuery}">
+                        <button type="submit" class="luxury-search-btn">Search</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <section class="filters" style="padding: 40px 5%; background: var(--warm-brown-mid); border-bottom: 1px solid rgba(245, 230, 211, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <div class="category-filters" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a th:href="@{/shop}" class="category-btn" th:classappend="${activeCategory == null && activeVibe == null && searchQuery == null} ? 'active' : ''">All Furniture</a>
+                    <a th:href="@{/shop(category='Lighting')}" class="category-btn" th:classappend="${activeCategory == 'Lighting'} ? 'active' : ''">Lighting</a>
+                    <a th:href="@{/shop(category='Decor')}" class="category-btn" th:classappend="${activeCategory == 'Decor'} ? 'active' : ''">Decor</a>
+                    <a th:href="@{/shop(category='Seating')}" class="category-btn" th:classappend="${activeCategory == 'Seating'} ? 'active' : ''">Seating</a>
+                    <a th:href="@{/shop(category='Tables')}" class="category-btn" th:classappend="${activeCategory == 'Tables'} ? 'active' : ''">Tables</a>
+                    <a th:href="@{/shop(category='Sofas')}" class="category-btn" th:classappend="${activeCategory == 'Sofas'} ? 'active' : ''">Sofas</a>
+                    <a th:href="@{/shop(category='Textiles')}" class="category-btn" th:classappend="${activeCategory == 'Textiles'} ? 'active' : ''">Textiles</a>
+                    <a th:href="@{/shop(category='Wall Art')}" class="category-btn" th:classappend="${activeCategory == 'Wall Art'} ? 'active' : ''">Wall Art</a>
+                    <a th:href="@{/shop(category='Plants')}" class="category-btn" th:classappend="${activeCategory == 'Plants'} ? 'active' : ''">Plants</a>
+                    <a th:href="@{/shop(category='Storage')}" class="category-btn" th:classappend="${activeCategory == 'Storage'} ? 'active' : ''">Storage</a>
+                    <a th:href="@{/shop(category='Pillows')}" class="category-btn" th:classappend="${activeCategory == 'Pillows'} ? 'active' : ''">Pillows</a>
+                </div>
+
+                <div class="vibe-pills" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span style="font-size: 0.75rem; color: var(--warm-cream); opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Vibe:</span>
+                    <a th:href="@{/shop(vibe='warm')}" class="vibe-btn" th:classappend="${activeVibe == 'warm'} ? 'active' : ''">Warm</a>
+                    <a th:href="@{/shop(vibe='minimal')}" class="vibe-btn" th:classappend="${activeVibe == 'minimal'} ? 'active' : ''">Minimal</a>
+                    <a th:href="@{/shop(vibe='nordic')}" class="vibe-btn" th:classappend="${activeVibe == 'nordic'} ? 'active' : ''">Nordic</a>
+                    <a th:href="@{/shop(vibe='bright')}" class="vibe-btn" th:classappend="${activeVibe == 'bright'} ? 'active' : ''">Bright</a>
+                    <a th:href="@{/shop(vibe='cozy')}" class="vibe-btn" th:classappend="${activeVibe == 'cozy'} ? 'active' : ''">Cozy</a>
+                    <a th:href="@{/shop(vibe='relaxed')}" class="vibe-btn" th:classappend="${activeVibe == 'relaxed'} ? 'active' : ''">Relaxed</a>
+                </div>
+            </div>
+            
+            <div th:if="${searchQuery != null}" style="margin-top: 30px; text-align: center;">
+                <p style="color: var(--warm-cream); opacity: 0.8;">Showing results for: <span style="font-style: italic; font-weight: 600; color: var(--beige-gold);" th:text="'&quot;' + ${searchQuery} + '&quot;'">"Cozy reading nook"</span></p>
+                <a th:href="@{/shop}" style="font-size: 0.8rem; color: var(--beige-gold); text-decoration: underline; margin-top: 10px; display: inline-block;">Clear Search</a>
+            </div>
+        </section>
+
+        <!-- Product Grid -->
+        <section id="product-list" class="results-section">
+            <div class="product-grid">
+                <!-- Dynamic DB products -->
+                <div class="product-card" th:each="product : ${products}" th:data-product-id="${product.id}" th:data-category="${#strings.toLowerCase(product.category.name)}" data-aos="fade-up">
+                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="product-image-container" th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}">
+                        <a th:href="@{'/product/' + ${product.id}}">
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category" th:text="${product.category.name}">Category</p>
+                        <h3 class="product-title" th:text="${product.name}">Product Name</h3>
+                        <p class="product-price" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹0.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Empty state for dynamic products -->
+                <div th:if="${products.empty}" style="grid-column: 1 / -1; text-align: center; padding: 80px 0;">
+                    <h3 style="font-size: 2rem; color: var(--warm-cream); opacity: 0.6;">No products found matching your vibe.</h3>
+                    <p style="margin-top: 20px; color: var(--warm-cream); opacity: 0.8;">Try a different lifestyle search like "minimal morning".</p>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            .active-filter {
+                border-bottom: 2px solid var(--text-primary);
+                padding-bottom: 5px;
+            }
+        </style>
+    </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Order Successful | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <section style="padding: 160px 10% 100px; text-align: center; background: var(--bg-primary);">
+            <div data-aos="zoom-in" style="background: var(--white); padding: 80px; border-radius: 24px; box-shadow: var(--shadow-medium); max-width: 700px; margin: 0 auto;">
+                <div style="width: 80px; height: 80px; background: #e6f4ea; color: #1e7e34; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 40px;">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                
+                <h1 style="font-size: 3rem; margin-bottom: 20px; font-family: 'Playfair Display', serif;">A Sanctuary in the Making</h1>
+                <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 50px;">Thank you for choosing ÉPURE. Your order has been placed and is currently being curated.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left; background: var(--bg-secondary); padding: 40px; border-radius: 16px; margin-bottom: 50px;">
+                    <div>
+                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Order Reference</p>
+                        <p style="font-weight: 700; font-size: 1.1rem;" th:text="'#' + ${order.id}">#12345</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Payment Status</p>
+                        <p style="font-weight: 700; font-size: 1.1rem;" th:text="${order.paymentStatus}">Success</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Estimated Delivery</p>
+                        <p style="font-weight: 700; font-size: 1.1rem;">4 - 7 Business Days</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px;">Shipping To</p>
+                        <p style="font-weight: 700; font-size: 1.1rem;" th:text="${order.city + ', ' + order.country}">Oslo, Norway</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <a th:href="@{/shop}" class="btn btn-primary" style="padding: 15px 40px; background: var(--text-primary); color: var(--white);">Return to Studio</a>
+                    <a th:href="@{/track-order}" class="btn btn-secondary" style="padding: 15px 40px; border: 1px solid var(--text-primary); color: var(--text-primary);">Track Order</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

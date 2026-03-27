@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title != null ? title + ' | ÉPURE' : 'ÉPURE | Premium Nordic Living'}"></title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons (optional, but FA is more common) -->
+    <!-- AOS for scroll animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+</head>
+
+<body th:fragment="layout(content, productId, productCategory)" th:data-product-id="${productId}" th:data-category="${productCategory}">
+
+    <!-- Sticky Navigation Bar -->
+    <nav th:unless="${hideNav != null && hideNav}">
+        <div class="logo">
+            <a th:href="@{/}">ÉPURE</a>
+        </div>
+
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/shop}">Shop</a></li>
+            <li><a th:href="@{/collections}">Collections</a></li>
+            <li><a th:href="@{/moodboards}">Moodboards</a></li>
+            <li><a th:href="@{/about}">About</a></li>
+            <li><a th:href="@{/support}">Support</a></li>
+        </ul>
+
+        <div class="nav-icons">
+            <div class="search-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <a th:href="@{/account}" sec:authorize="isAuthenticated()"><i class="fa-regular fa-user"></i></a>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()"><i class="fa-regular fa-user"></i></a>
+            <a th:href="@{/wishlist}"><i class="fa-regular fa-heart"></i></a>
+            <a th:href="@{/cart}"><i class="fa-solid fa-cart-shopping"></i></a>
+            <div class="user-name" sec:authorize="isAuthenticated()">
+                <span th:text="${#authentication.name}">User</span>
+            </div>
+            <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')"><i class="fa-solid fa-gear"></i></a>
+        </div>
+    </nav>
+
+    <!-- Search Overlay -->
+    <div id="search-overlay" class="search-overlay">
+        <button class="search-overlay-close" onclick="closeSearch()">&times;</button>
+        <div class="search-container-overlay">
+            <form th:action="@{/shop}" method="get" class="search-overlay-form">
+                <input type="text" name="query" id="search-input" class="search-overlay-input" placeholder="What are you seeking?" autocomplete="off">
+                <button type="submit" class="search-overlay-submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            <div class="vibe-suggestions">
+                <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Quick Search:</span>
+                <a href="/shop?vibe=minimal" class="vibe-suggestion-tag">Minimal</a>
+                <a href="/shop?vibe=nordic" class="vibe-suggestion-tag">Nordic</a>
+                <a href="/shop?vibe=warm" class="vibe-suggestion-tag">Warm</a>
+                <a href="/shop?vibe=bright" class="vibe-suggestion-tag">Bright</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="${content}"></div>
+
+    <!-- Footer -->
+    <footer
+        style="background: #2b1f18; padding: 80px 5%; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 100px; color: #d8b892;">
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 60px;">
+            <div>
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 20px;">ÉPURE</h2>
+                <p style="color: rgba(216, 184, 146, 0.7); font-size: 0.9rem;">Curated furniture and decor designed to
+                    create calm, minimalist living spaces inspired by Nordic serenity.</p>
+            </div>
+            <div>
+                <h4
+                    style="margin-bottom: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">
+                    Shop</h4>
+                <ul style="color: rgba(216, 184, 146, 0.7); font-size: 0.9rem; line-height: 2;">
+                    <li><a href="/shop" style="color: inherit;">All Furniture</a></li>
+                    <li><a href="/shop?category=lighting" style="color: inherit;">Lighting</a></li>
+                    <li><a href="/shop?category=decor" style="color: inherit;">Decor</a></li>
+                    <li><a href="/collections" style="color: inherit;">New Arrivals</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4
+                    style="margin-bottom: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">
+                    Support</h4>
+                <ul style="color: rgba(216, 184, 146, 0.7); font-size: 0.9rem; line-height: 2;">
+                    <li><a href="/support" style="color: inherit;">Contact Us</a></li>
+                    <li><a href="/track-order" style="color: inherit;">Track Your Order</a></li>
+                    <li><a href="/support#faq" style="color: inherit;">Shipping & Returns</a></li>
+                    <li><a href="/support#faq" style="color: inherit;">Care Guide</a></li>
+                    <li><a href="/support#faq" style="color: inherit;">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4
+                    style="margin-bottom: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">
+                    Newsletter</h4>
+                <p style="color: rgba(216, 184, 146, 0.7); font-size: 0.85rem; margin-bottom: 20px;">Join our community for
+                    design inspiration and early access.</p>
+                <div class="newsletter-form-container" style="display: flex; border-bottom: 1px solid #d8b892; padding-bottom: 10px;">
+                    <input type="email" id="newsletter-email" placeholder="Your Email"
+                        style="background: transparent; border: none; flex: 1; outline: none; font-size: 0.9rem; color: #d8b892;">
+                    <button type="button" onclick="startDesignConsultation()"
+                        style="background: transparent; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: #d8b892;">Join</button>
+                </div>
+            </div>
+        </div>
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(216, 184, 146, 0.5); font-size: 0.8rem;">
+            <p>&copy; 2026 ÉPURE Studio. All rights reserved.</p>
+            <div style="display: flex; gap: 20px;">
+                <a href="#" style="color: inherit;"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" style="color: inherit;"><i class="fa-brands fa-pinterest"></i></a>
+                <a href="#" style="color: inherit;"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+    </footer>
+
+        </div>
+    </div>
+
+    <!-- AI Support Chatbot Widget -->
+    <div id="support-chat-widget" style="position: fixed; bottom: 30px; right: 30px; z-index: 10001; font-family: 'Inter', sans-serif;">
+        <!-- Support Chat Toggle Button -->
+        <button id="support-chat-toggle" style="width: 60px; height: 60px; border-radius: 50%; background: #2b1f18; color: #d8b892; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 10002;">
+            <i class="fa-solid fa-headset" style="font-size: 1.4rem;"></i>
+        </button>
+
+        <!-- Support Chat Window -->
+        <div id="support-chat-window" style="position: absolute; bottom: 80px; right: 0; width: 360px; height: 500px; background: #FAF9F6; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1px solid rgba(0,0,0,0.03);">
+            <!-- Header -->
+            <div style="padding: 20px; background: #f5f1e9; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 32px; height: 32px; background: #2b1f18; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d8b892; font-size: 0.8rem;">É</div>
+                    <div>
+                        <h4 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #1a1a1a;">Support Assistant</h4>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="width: 6px; height: 6px; background: #76a87c; border-radius: 50%;"></span>
+                            <span style="font-size: 0.7rem; color: #8e7d6a; font-weight: 500;">AI Online</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="toggleSupportChat()" style="background: none; border: none; color: #8B7D6B; cursor: pointer; font-size: 1rem;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Messages Container -->
+            <div id="support-messages" style="flex: 1; padding: 20px; overflow-y: auto; background: #FAF9F6; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth;">
+                <!-- Initial Welcome -->
+                <div class="support-msg bot" style="align-self: flex-start; max-width: 80%;">
+                    <div style="background: #fdfaf6; padding: 12px 16px; border-radius: 16px 16px 16px 4px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                        <p style="margin: 0; font-size: 0.85rem; line-height: 1.5; color: #333;">Hej! Welcome to ÉPURE Support. Please enter your email to start. I'm here to help with your orders and queries.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-Auth Area -->
+            <div id="support-auth-area" style="padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); background: white;">
+                <input type="email" id="support-email-input" placeholder="Your email address..." style="width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); background: #fdfaf6; outline: none; margin-bottom: 10px; font-size: 0.9rem;">
+                <button type="button" onclick="startSupportFlow()" style="width: 100%; padding: 12px; background: #2b1f18; color: #d8b892; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.85rem; letter-spacing: 0.5px;">Start Support</button>
+            </div>
+
+            <!-- Active Input Area -->
+            <div id="support-input-area" style="padding: 15px 20px; border-top: 1px solid rgba(0,0,0,0.05); background: white; display: none;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" onclick="document.getElementById('support-file-upload').click()" style="width: 38px; height: 38px; border-radius: 10px; background: #fdfaf6; border: 1px solid rgba(0,0,0,0.08); color: #8e7d6a; cursor: pointer; flex-shrink: 0;"><i class="fa-solid fa-paperclip"></i></button>
+                    <input type="file" id="support-file-upload" style="display: none;">
+                    <input type="text" id="support-text-input" placeholder="How can I help you?" style="flex: 1; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; background: #fdfaf6; padding: 10px 15px; outline: none; font-size: 0.85rem;">
+                    <button type="button" id="send-support-btn" style="width: 38px; height: 38px; border-radius: 10px; background: #2b1f18; color: #d8b892; border: none; cursor: pointer; flex-shrink: 0;"><i class="fa-solid fa-arrow-up"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Design Consultation Chatbot (Restored) -->
+    <div id="chat-widget" style="position: fixed; bottom: 30px; left: 30px; z-index: 10001; font-family: 'Inter', sans-serif;">
+        <button id="chat-toggle-btn" style="width: 60px; height: 60px; border-radius: 50%; background: #FAF9F6; color: #2b1f18; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: none;">
+            <i class="fa-solid fa-message"></i>
+        </button>
+
+        <div id="chat-window" style="position: absolute; bottom: 80px; left: 0; width: 360px; height: 500px; background: #FAF9F6; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; transform: translateY(30px) scale(0.9); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1px solid rgba(0,0,0,0.03);">
+            <div style="padding: 20px; background: #f5f1e9; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #1a1a1a;">Design Consultation</h4>
+                <button onclick="toggleChat()" style="background: none; border: none; color: #8B7D6B; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="chat-messages" style="flex: 1; padding: 20px; overflow-y: auto; background: #FAF9F6; display: flex; flex-direction: column; gap: 8px;">
+                <div class="chat-msg admin" style="align-self: flex-start; max-width: 85%;">
+                    <div style="background: white; color: #1a1a1a; padding: 12px 18px; border-radius: 18px 18px 18px 4px; border: 1px solid rgba(0,0,0,0.05);">
+                        <p style="margin: 0; font-size: 0.9rem;">Hej! Looking for some design inspiration? Our experts are here to help.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="chat-auth-area" style="padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); background: white;">
+                <input type="email" id="chat-email-input" placeholder="Enter your email to start..." style="width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); background: #fdfaf6; outline: none; margin-bottom: 10px; font-size: 0.9rem;">
+                <button onclick="startConsultationFlow()" style="width: 100%; padding: 12px; background: #2b1f18; color: #d8b892; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Connect to Expert</button>
+            </div>
+            <div id="chat-input-area" style="padding: 15px 20px; border-top: 1px solid rgba(0,0,0,0.05); background: white; display: none;">
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" onclick="document.getElementById('chat-file-upload').click()" style="width: 38px; background: #fdfaf6; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; color: #8e7d6a; cursor: pointer;"><i class="fa-solid fa-image"></i></button>
+                    <input type="file" id="chat-file-upload" style="display: none;">
+                    <input type="text" id="chat-text-input" placeholder="Type your message..." style="flex: 1; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; background: #fdfaf6; padding: 10px 15px; outline: none; font-size: 0.85rem;">
+                    <button type="button" id="send-chat-btn" style="width: 38px; background: #2b1f18; color: #d8b892; border: none; border-radius: 10px; cursor: pointer;"><i class="fa-solid fa-arrow-up"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            easing: 'ease-out-cubic'
+        });
+
+        // Hero Slider Logic
+        const slides = document.querySelectorAll('.hero-slide');
+        if (slides.length > 0) {
+            let currentSlide = 0;
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 6000); // Change slide every 6 seconds
+        }
+
+        // Sticky Navbar transparency
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (nav) {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }
+        });
+
+        // Product Card & Wishlist Functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const getWishlist = () => JSON.parse(localStorage.getItem('epure_wishlist') || '[]');
+            const saveWishlist = (list) => localStorage.setItem('epure_wishlist', JSON.stringify(list));
+
+            const updateWishlistUI = () => {
+                const wishlist = getWishlist();
+                document.querySelectorAll('[data-product-id]').forEach(el => {
+                    const productId = el.getAttribute('data-product-id');
+                    if (!productId) return;
+
+                    let icon = el.querySelector('i');
+                    // Special case for card structure vs standalone trigger
+                    if (el.classList.contains('product-card') || el.classList.contains('modal-product-card')) {
+                        icon = el.querySelector('.wishlist-icon i, .modal-wishlist-icon i');
+                    }
+                    
+                    if (icon) {
+                        if (wishlist.includes(productId)) {
+                            icon.classList.remove('fa-regular');
+                            icon.classList.add('fa-solid');
+                            icon.style.color = '#8b735b'; // Scandinavian warm brown
+                        } else {
+                            icon.classList.remove('fa-solid');
+                            icon.classList.add('fa-regular');
+                            icon.style.color = '';
+                        }
+                    }
+                });
+            };
+
+            // Initial UI Sync
+            updateWishlistUI();
+
+            // Event Delegation for Product Cards & Wishlist Triggers
+            document.addEventListener('click', (e) => {
+                // 1. Handle Wishlist Click (either in card or standalone)
+                const wishlistBtn = e.target.closest('.wishlist-icon, .modal-wishlist-icon, .wishlist-trigger');
+                if (wishlistBtn) {
+                    const productId = wishlistBtn.getAttribute('data-product-id') || 
+                                    (wishlistBtn.closest('.product-card, .modal-product-card') ? 
+                                     wishlistBtn.closest('.product-card, .modal-product-card').getAttribute('data-product-id') : null);
+                    
+                    if (!productId) return;
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    let wishlist = getWishlist();
+                    const index = wishlist.indexOf(productId);
+                    
+                    if (index > -1) {
+                        wishlist.splice(index, 1);
+                    } else {
+                        wishlist.push(productId);
+                    }
+                    
+                    saveWishlist(wishlist);
+                    updateWishlistUI();
+                    return;
+                }
+
+                // 2. Handle Product Card Navigation
+                const card = e.target.closest('.product-card, .modal-product-card');
+                if (!card) return;
+
+                const productId = card.getAttribute('data-product-id');
+                if (!productId) return;
+
+                // Prevent redirection if clicking buttons, links, or inputs
+                if (e.target.closest('button, a, input, form')) return;
+                
+                window.location.href = `/product/${productId}`;
+            });
+
+            // Set pointer cursor for product cards to indicate clickability
+            const style = document.createElement('style');
+            style.innerHTML = '.product-card, .modal-product-card, .wishlist-trigger, .wishlist-icon { cursor: pointer; }';
+            document.head.appendChild(style);
+        });
+
+        // Design Consultation Widget Logic
+        let currentSessionId = null;
+        let pollingInterval = null;
+
+        function toggleChat() {
+            const chatWin = document.getElementById('chat-window');
+            const isActive = chatWin.style.visibility === 'visible';
+            
+            if (isActive) {
+                chatWin.style.transform = 'translateY(30px) scale(0.9)';
+                chatWin.style.opacity = '0';
+                chatWin.style.visibility = 'hidden';
+                if (pollingInterval) clearInterval(pollingInterval);
+            } else {
+                chatWin.style.visibility = 'visible';
+                chatWin.style.opacity = '1';
+                chatWin.style.transform = 'translateY(0) scale(1)';
+                if (currentSessionId) startPolling();
+            }
+        }
+
+        document.getElementById('chat-toggle-btn').addEventListener('click', toggleChat);
+
+        async function startDesignConsultation() {
+            const email = document.getElementById('newsletter-email').value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // Open chat first
+            const chatWin = document.getElementById('chat-window');
+            if (chatWin.style.visibility !== 'visible') toggleChat();
+            
+            await initiateSession(email);
+        }
+
+        async function startConsultationFlow() {
+            const email = document.getElementById('chat-email-input').value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            await initiateSession(email);
+        }
+
+        async function initiateSession(email) {
+            try {
+                const response = await fetch('/api/consultation/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                if (!response.ok) throw new Error('Failed to start session');
+                
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed');
+                
+                currentSessionId = data.conversationId;
+                
+                document.getElementById('chat-auth-area').style.display = 'none';
+                document.getElementById('chat-input-area').style.display = 'block';
+                
+                // Send first message automatically
+                await sendChatMessage("New consultation request started.");
+                
+                await loadMessages();
+                startPolling();
+            } catch (err) {
+                console.error(err);
+                alert('Unable to start consultation. Please try again.');
+            }
+        }
+
+        async function loadMessages() {
+            if (!currentSessionId) return;
+            try {
+                const response = await fetch(`/api/consultation/messages/${currentSessionId}`);
+                const messages = await response.json();
+                renderMessages(messages);
+            } catch (err) {}
+        }
+
+        function renderMessages(messages) {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = ''; // Clear but could optimize
+            
+            messages.forEach(msg => {
+                const isUser = (msg.senderType || msg.sender_type) === 'USER';
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `chat-msg ${isUser ? 'user' : 'admin'}`;
+                msgDiv.style.alignSelf = isUser ? 'flex-end' : 'flex-start';
+                msgDiv.style.maxWidth = '85%';
+                msgDiv.style.marginBottom = '5px';
+
+                let attachmentHtml = '';
+                if (msg.attachments && msg.attachments.length > 0) {
+                    msg.attachments.forEach(att => {
+                        attachmentHtml += `<img src="${att.fileUrl}" style="max-width: 100%; border-radius: 12px; margin-top: 8px; display: block; border: 1px solid rgba(0,0,0,0.05);">`;
+                    });
+                }
+
+                // Fallback for message text if property names differ
+                const text = msg.messageText || msg.message_text || msg.message || "[No content]";
+
+                msgDiv.innerHTML = `
+                    <div style="${isUser ? 
+                        'background: #2b1f18; color: #d8b892; padding: 12px 18px; border-radius: 18px 18px 4px 18px; box-shadow: var(--shadow-small);' : 
+                        'background: white; color: #1a1a1a; padding: 12px 18px; border-radius: 18px 18px 18px 4px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--shadow-small);'}">
+                        <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">${text}</p>
+                        ${attachmentHtml}
+                    </div>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(loadMessages, 3000);
+        }
+
+        async function sendChatMessage(text) {
+            if (!text || !currentSessionId) return;
+
+            try {
+                const response = await fetch('/api/consultation/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        conversationId: currentSessionId,
+                        sender: 'user',
+                        message: text
+                    })
+                });
+                if (response.ok) {
+                    await loadMessages();
+                    return true;
+                }
+            } catch (err) {
+                console.error('Send message failed:', err);
+            }
+            return false;
+        }
+
+        document.getElementById('send-chat-btn').addEventListener('click', async () => {
+            const input = document.getElementById('chat-text-input');
+            const text = input.value.trim();
+            if (await sendChatMessage(text)) {
+                input.value = '';
+                input.style.height = 'auto';
+            }
+        });
+
+        document.getElementById('chat-file-upload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentSessionId) return;
+
+            const formData = new FormData();
+            formData.append('sessionId', currentSessionId);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/consultation/upload', { method: 'POST', body: formData });
+                if (response.ok) {
+                    await loadMessages();
+                }
+            } catch (err) {
+                alert('Upload failed');
+            }
+        });
+
+        // Textarea auto-height
+        document.getElementById('chat-text-input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // AI Support Chat Widget Logic
+        let supportSessionId = null;
+        let supportPollingInterval = null;
+
+        function toggleSupportChat() {
+            const supportWin = document.getElementById('support-chat-window');
+            const isActive = supportWin.style.visibility === 'visible';
+            
+            if (isActive) {
+                supportWin.style.transform = 'translateY(20px) scale(0.95)';
+                supportWin.style.opacity = '0';
+                supportWin.style.visibility = 'hidden';
+                if (supportPollingInterval) clearInterval(supportPollingInterval);
+            } else {
+                supportWin.style.visibility = 'visible';
+                supportWin.style.opacity = '1';
+                supportWin.style.transform = 'translateY(0) scale(1)';
+                if (supportSessionId) startSupportPolling();
+            }
+        }
+
+        document.getElementById('support-chat-toggle').addEventListener('click', toggleSupportChat);
+
+        async function startSupportFlow() {
+            const email = document.getElementById('support-email-input').value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/support-chat/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                if (!response.ok) throw new Error('Auth failed');
+                const data = await response.json();
+                
+                supportSessionId = data.conversationId;
+                document.getElementById('support-auth-area').style.display = 'none';
+                document.getElementById('support-input-area').style.display = 'block';
+                
+                await loadSupportMessages();
+                startSupportPolling();
+            } catch (err) {
+                alert('Connection error. Try again.');
+            }
+        }
+
+        async function loadSupportMessages() {
+            if (!supportSessionId) return;
+            try {
+                const response = await fetch(`/api/support-chat/messages/${supportSessionId}`);
+                const messages = await response.json();
+                renderSupportMessages(messages);
+            } catch (err) {}
+        }
+
+        function renderSupportMessages(messages) {
+            const container = document.getElementById('support-messages');
+            container.innerHTML = ''; 
+            
+            messages.forEach(msg => {
+                const isUser = msg.senderType === 'USER';
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `support-msg ${msg.senderType.toLowerCase()}`;
+                msgDiv.style.alignSelf = isUser ? 'flex-end' : 'flex-start';
+                msgDiv.style.maxWidth = '80%';
+                msgDiv.style.marginBottom = '8px';
+
+                let attachmentHtml = '';
+                if (msg.attachments && msg.attachments.length > 0) {
+                    msg.attachments.forEach(att => {
+                        attachmentHtml += `<img src="${att.fileUrl}" style="max-width: 100%; border-radius: 12px; margin-top: 8px; display: block;">`;
+                    });
+                }
+
+                const style = isUser ? 
+                    'background: #2b1f18; color: #d8b892; padding: 12px 16px; border-radius: 16px 16px 4px 16px; font-size: 0.85rem;' : 
+                    'background: white; color: #333; padding: 12px 16px; border-radius: 16px 16px 16px 4px; border: 1px solid rgba(0,0,0,0.04); font-size: 0.85rem;';
+
+                msgDiv.innerHTML = `
+                    <div style="${style} box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                        <p style="margin: 0; line-height: 1.5;">${msg.messageText}</p>
+                        ${attachmentHtml}
+                    </div>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function startSupportPolling() {
+            if (supportPollingInterval) clearInterval(supportPollingInterval);
+            supportPollingInterval = setInterval(loadSupportMessages, 3000);
+        }
+
+        async function sendSupportMessage(text) {
+            if (!text || !supportSessionId) return;
+            try {
+                const response = await fetch('/api/support-chat/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        conversationId: supportSessionId,
+                        sender: 'USER',
+                        message: text
+                    })
+                });
+                if (response.ok) {
+                    await loadSupportMessages();
+                    return true;
+                }
+            } catch (err) {}
+            return false;
+        }
+
+        document.getElementById('send-support-btn').addEventListener('click', async () => {
+            const input = document.getElementById('support-text-input');
+            const text = input.value.trim();
+            if (await sendSupportMessage(text)) {
+                input.value = '';
+            }
+        });
+
+        document.getElementById('support-text-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('send-support-btn').click();
+        });
+
+        document.getElementById('support-file-upload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !supportSessionId) return;
+
+            const formData = new FormData();
+            formData.append('sessionId', supportSessionId);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/support-chat/upload', { method: 'POST', body: formData });
+                if (response.ok) await loadSupportMessages();
+            } catch (err) {
+                alert('Upload failed');
+            }
+        });
+
+        // Search Overlay Logic
+        const searchOverlay = document.getElementById('search-overlay');
+        const searchInput = document.getElementById('search-input');
+        const searchTriggers = document.querySelectorAll('.search-trigger');
+
+        function openSearch() {
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => searchInput.focus(), 300);
+        }
+
+        function closeSearch() {
+            searchOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        searchTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                openSearch();
+            });
+        });
+
+        // Close search on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                closeSearch();
+            }
+        });
+    </script>
+</body>
+
+</html>

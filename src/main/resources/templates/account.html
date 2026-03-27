@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>My Account | ÉPURE</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <header style="padding: 160px 5% 60px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div data-aos="fade-down">
+                <h1 style="font-size: 3.5rem; margin-bottom: 15px;">Your Sanctuary Profile</h1>
+                <p style="color: var(--text-secondary);">Manage your curated selections and details.</p>
+            </div>
+        </header>
+
+        <section style="padding: 80px 10%; background: var(--bg-primary); min-height: 60vh;">
+            <div style="max-width: 800px; margin: 0 auto; background: var(--white); padding: 50px; border-radius: 24px; box-shadow: var(--shadow-medium);" data-aos="fade-up">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Account Dashboard</h2>
+                    <p style="color: var(--text-secondary);">Welcome back.</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div style="padding: 30px; border: 1px solid rgba(0,0,0,0.1); border-radius: 16px; text-align: center;">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: var(--text-primary); margin-bottom: 15px;"></i>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Order History</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">Track your past curated pieces.</p>
+                        <a href="/track-order" class="btn" style="border: 1px solid var(--text-primary); padding: 10px 20px;">Track Orders</a>
+                    </div>
+                    <div style="padding: 30px; border: 1px solid rgba(0,0,0,0.1); border-radius: 16px; text-align: center;">
+                        <i class="fa-solid fa-user" style="font-size: 2rem; color: var(--text-primary); margin-bottom: 15px;"></i>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Profile Details</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">Update your personal sanctuary information.</p>
+                        <a href="/account/edit" class="btn" style="border: 1px solid var(--text-primary); padding: 10px 20px;">Edit Profile</a>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 50px;">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-primary" style="background: var(--text-primary); color: var(--white); border: none; padding: 15px 40px; cursor: pointer; text-transform: uppercase;">Sign Out</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

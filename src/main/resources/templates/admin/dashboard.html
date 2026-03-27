@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Admin Panel</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --bg-admin: #F8F9FA;
+            --text-admin: #212529;
+            --primary-admin: #1F1F1F;
+            --accent-admin: #D2C4B0;
+            --white: #FFFFFF;
+        }
+
+        * { margin:0; padding:0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-admin); color: var(--text-admin); display: flex; }
+
+        /* Sidebar & Admin Base (Moved to fragment style block for consistency) */
+
+        /* Main Content */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 60px 50px; width: calc(100% - var(--sidebar-width)); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .title { font-size: 1.8rem; font-weight: 700; }
+
+        /* Analytics Cards */
+        .analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .card { background: var(--white); padding: 30px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .card-label { font-size: 0.8rem; color: #6c757d; margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-value { font-size: 1.8rem; font-weight: 700; }
+
+        /* Table */
+        .table-container { background: var(--white); border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #FAF9F6; text-align: left; padding: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: #6c757d; }
+        td { padding: 20px; border-top: 1px solid rgba(0,0,0,0.03); font-size: 0.9rem; }
+        .product-img-admin { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: #e6f4ea; color: #1e7e34; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" th:fragment="admin-nav">
+        <style>
+            .sidebar { 
+                width: 280px; 
+                height: 100vh; 
+                background: #FFFFFF; 
+                border-right: 1px solid rgba(0,0,0,0.05); 
+                padding: 40px 15px; 
+                position: fixed; 
+                left: 0;
+                top: 0;
+                display: flex; 
+                flex-direction: column; 
+                z-index: 1000;
+                transition: all 0.3s ease;
+            }
+            .sidebar-logo { 
+                font-size: 1.5rem; 
+                font-weight: 700; 
+                margin-bottom: 40px; 
+                padding: 0 20px; 
+                font-family: 'Inter', sans-serif;
+                color: #1F1F1F;
+            }
+            .sidebar-logo span { color: #D2C4B0; }
+            .sidebar-nav-items { 
+                list-style: none; 
+                display: flex; 
+                flex-direction: column; 
+                gap: 5px; 
+                flex: 1; 
+                padding: 0;
+                margin: 0;
+            }
+            .sidebar-nav-link { 
+                display: flex; 
+                align-items: center; 
+                gap: 15px; 
+                padding: 12px 20px; 
+                border-radius: 12px; 
+                text-decoration: none !important; 
+                color: #6c757d !important; 
+                font-size: 0.92rem; 
+                font-weight: 500; 
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                white-space: nowrap;
+            }
+            .sidebar-nav-link i { 
+                width: 22px; 
+                font-size: 1.1rem; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                opacity: 0.7; 
+                transition: transform 0.3s ease;
+            }
+            .sidebar-nav-link:hover { 
+                background: #F8F9FA; 
+                color: #1F1F1F !important; 
+            }
+            .sidebar-nav-link:hover i {
+                opacity: 1;
+                transform: translateX(3px);
+            }
+            .sidebar-nav-link.active { 
+                background: #F3F4F6; 
+                color: #1F1F1F !important; 
+                font-weight: 600; 
+            }
+            .sidebar-nav-link.active i { 
+                opacity: 1; 
+            }
+            
+            .sidebar-bottom-group {
+                margin-top: auto;
+                padding-top: 30px;
+                border-top: 1px solid rgba(0,0,0,0.03);
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+        </style>
+        
+        <div class="sidebar-logo">ÉPURE<span>.</span></div>
+        
+        <ul class="sidebar-nav-items">
+            <li>
+                <a href="/admin" class="sidebar-nav-link">
+                    <i class="fa-solid fa-chart-line"></i> <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/products" class="sidebar-nav-link">
+                    <i class="fa-solid fa-couch"></i> <span>Products</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/moodboards" class="sidebar-nav-link">
+                    <i class="fa-solid fa-palette"></i> <span>Moodboards</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/orders" class="sidebar-nav-link">
+                    <i class="fa-solid fa-cart-flatbed"></i> <span>Orders</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/users" class="sidebar-nav-link">
+                    <i class="fa-solid fa-users-gear"></i> <span>Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/design-chat" class="sidebar-nav-link">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Design Consultations</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/support" class="sidebar-nav-link">
+                    <i class="fa-solid fa-headset"></i> <span>Support</span>
+                </a>
+            </li>
+            
+            <div class="sidebar-bottom-group">
+                <li>
+                    <a href="/" class="sidebar-nav-link">
+                        <i class="fa-solid fa-arrow-left"></i> <span>Studio Site</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/logout" class="sidebar-nav-link" style="color:#dc3545 !important;">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
+                    </a>
+                </li>
+            </div>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 class="title">Studio Analytics</h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span style="font-size: 0.85rem; color: #6c757d;" th:text="${#dates.format(#dates.createNow(), 'EEEE, MMMM d, yyyy')}">Date</span>
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-admin); display: flex; align-items: center; justify-content: center; color: var(--white);">A</div>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="card">
+                <span class="card-label">Total Revenue</span>
+                <p class="card-value" th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">₹48,290.00</p>
+                <span style="font-size: 0.75rem; color: #1e7e34; margin-top: 5px; display: block;"><i class="fa-solid fa-arrow-up"></i> +12% from last month</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Total Orders</span>
+                <p class="card-value" th:text="${totalOrders}">124</p>
+                <span style="font-size: 0.75rem; color: #1e7e34; margin-top: 5px; display: block;"><i class="fa-solid fa-arrow-up"></i> +8% from last month</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Active Users</span>
+                <p class="card-value" th:text="${activeUsers}">12</p>
+                <span style="font-size: 0.75rem; color: #6c757d; margin-top: 5px; display: block;">Unique customers</span>
+            </div>
+            <div class="card">
+                <span class="card-label">Conversion</span>
+                <p class="card-value">3.4%</p>
+                <span style="font-size: 0.75rem; color: #dc3545; margin-top: 5px; display: block;"><i class="fa-solid fa-arrow-down"></i> -0.5% from last week</span>
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 25px;">Popular Atmosphere Sets</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Item</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Sustainability</th>
+                        <th>Price</th>
+                        <th>Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${popularProducts}">
+                        <td><img th:src="${product.imageUrl}" class="product-img-admin"></td>
+                        <td>
+                            <p style="font-weight: 600;" th:text="${product.name}">Product Name</p>
+                            <p style="font-size: 0.75rem; color: #6c757d;" th:text="'ID: #' + ${product.id}">ID: #1</p>
+                        </td>
+                        <td th:text="${product.category.name}">Category</td>
+                        <td>
+                            <span class="badge badge-success" th:text="${product.sustainabilityScore} + '/10'">9/10</span>
+                        </td>
+                        <td th:text="'₹' + ${product.price}">₹249</td>
+                        <td>42 units</td>
+                    </tr>
+                    <tr th:if="${popularProducts.empty}">
+                        <td colspan="6" style="text-align: center; padding: 50px;">No analytics data available yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

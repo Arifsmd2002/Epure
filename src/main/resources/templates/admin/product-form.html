@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title th:text="${title}">Add Product | ÉPURE Admin</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main style="padding: 120px 10% 60px;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="margin-bottom: 40px;">
+                <a th:href="@{/admin/products}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;"><i class="fa-solid fa-arrow-left"></i> Back to Products</a>
+                <h1 style="font-size: 2.5rem; margin-top: 20px;" th:text="${title}">Add New Product</h1>
+            </div>
+
+            <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.05);">
+                <form th:action="@{/admin/products/save}" th:object="${product}" method="post">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Product Name</label>
+                            <input type="text" th:field="*{name}" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Price (₹)</label>
+                            <input type="number" th:field="*{price}" step="0.01" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Category ID (1-10)</label>
+                            <input type="number" name="category" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                            <p style="font-size: 0.7rem; color: #8e7d6a; margin-top: 5px;">1:Lighting, 2:Decor, 3:Seating, 4:Tables, 5:Sofas, 6:Textiles...</p>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Image URL</label>
+                            <input type="text" th:field="*{imageUrl}" required style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Description</label>
+                        <textarea th:field="*{description}" rows="4" style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;"></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Origin Country</label>
+                            <input type="text" th:field="*{origin}" style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Sustainability Score (1-10)</label>
+                            <input type="number" th:field="*{sustainabilityScore}" min="1" max="10" style="width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; outline: none;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; background: #2b1f18; color: white; border: none; font-size: 1.1rem; font-weight: 600;">Save Product</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

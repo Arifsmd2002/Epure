@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Create Account | ÉPURE</title>
+</head>
+<body style="background: var(--bg-primary); font-family: 'Inter', sans-serif;">
+    <main style="display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 40px 20px;">
+        <div id="registration-card" data-aos="zoom-in" style="background: var(--white); width: 100%; max-width: 500px; padding: 60px 40px; border-radius: 24px; box-shadow: var(--shadow-medium); text-align: center; transition: all 0.5s ease;">
+
+            <!-- Logo -->
+            <div class="logo" style="margin-bottom: 10px; font-size: 2.2rem; font-family: 'Playfair Display', serif;">
+                <a th:href="@{/}">ÉPURE</a>
+            </div>
+
+            <!-- Registration Section -->
+            <div id="register-section">
+                <h2 style="font-size: 1.4rem; margin-bottom: 8px; font-weight: 700;">Create your sanctuary account.</h2>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 35px;">Join ÉPURE and curate your perfect Nordic living space.</p>
+
+                <!-- Error Message -->
+                <div id="register-error" style="display: none; padding: 14px 18px; background: #fee2e2; color: #dc2626; border-radius: 12px; font-size: 0.85rem; margin-bottom: 25px; text-align: center; border: 1px solid #fecaca;">
+                    <i class="fa-solid fa-circle-exclamation" style="margin-right: 6px;"></i>
+                    <span id="error-text">Error message</span>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="register-form" style="display: grid; gap: 18px; text-align: left;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">First Name</label>
+                            <input type="text" name="firstName" placeholder="Erik" required
+                                   style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                                   onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">Last Name</label>
+                            <input type="text" name="lastName" placeholder="Sorenson" required
+                                   style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                                   onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">Username</label>
+                        <input type="text" name="username" placeholder="erik_sorenson" required
+                               style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">Email Address</label>
+                        <input type="email" name="email" id="reg-email" placeholder="erik@example.com" required
+                               style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">Password</label>
+                        <input type="password" name="password" id="password" placeholder="••••••••" required minlength="6"
+                               style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;">Confirm Password</label>
+                        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="••••••••" required minlength="6"
+                               style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-primary); outline: none; font-size: 0.9rem; transition: border-color 0.3s;"
+                               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(0,0,0,0.1)'"
+                               oninput="checkPasswordMatch()">
+                        <p id="pwMatchMsg" style="font-size: 0.75rem; margin-top: 6px; color: transparent;">Passwords must match</p>
+                    </div>
+                    <button type="submit" id="register-btn"
+                            style="width: 100%; height: 58px; background: var(--text-primary); color: var(--white); font-weight: 600; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">
+                        Create Account
+                    </button>
+                </form>
+                <p style="margin-top: 30px; color: var(--text-secondary); font-size: 0.88rem;">
+                    Already have an account? <a th:href="@{/login}" style="font-weight: 600; color: var(--text-primary); text-decoration: underline;">Sign in</a>
+                </p>
+            </div>
+
+            <!-- OTP Section (Hidden initially) -->
+            <div id="otp-section" style="display: none;">
+                <h2 style="font-size: 1.4rem; margin-bottom: 8px; font-weight: 700;">Account Verification</h2>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 25px;">We've sent a 6-digit code to <span id="display-email" style="color: var(--text-primary); font-weight: 600;"></span></p>
+
+                <div id="otp-error" style="display: none; padding: 14px 18px; background: #fee2e2; color: #dc2626; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; text-align: center; border: 1px solid #fecaca;">
+                    <i class="fa-solid fa-circle-exclamation" style="margin-right: 6px;"></i>
+                    <span id="otp-error-text">Invalid OTP</span>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 12px;">Enter 6-digit OTP</label>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                        <input type="text" class="otp-input" maxlength="1" style="width: 45px; height: 55px; text-align: center; font-size: 1.2rem; font-weight: 600; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; background: var(--bg-primary); outline: none;">
+                    </div>
+                </div>
+
+                <button id="verify-otp-btn" style="width: 100%; height: 58px; background: var(--text-primary); color: var(--white); font-weight: 600; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">
+                    Verify Account
+                </button>
+
+                <p style="margin-top: 25px; color: var(--text-secondary); font-size: 0.88rem;">
+                    Didn't receive the code? 
+                    <button id="resend-otp-link" disabled style="background: none; border: none; font-weight: 600; color: var(--text-secondary); text-decoration: underline; cursor: not-allowed; padding: 0;">
+                        Resend Code (<span id="resend-timer">30</span>s)
+                    </button>
+                </p>
+                <a href="#" id="back-to-register" style="display: block; margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary); text-decoration: none;">← Edit details</a>
+            </div>
+
+            <!-- Success Message (Hidden initially) -->
+            <div id="success-section" style="display: none;">
+                <div style="font-size: 4rem; color: #059669; margin-bottom: 20px;"><i class="fa-solid fa-circle-check"></i></div>
+                <h2 style="font-size: 1.4rem; margin-bottom: 12px; font-weight: 700;">Account Created!</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 30px;">Your ÉPURE account is ready. Welcome to our sanctuary.</p>
+                <a th:href="@{/login}" class="btn" style="display: inline-block; padding: 16px 40px; background: var(--text-primary); color: var(--white); border-radius: 12px; text-decoration: none; font-weight: 600;">Sign In Now</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        const registrationCard = document.getElementById('registration-card');
+        const registerSection = document.getElementById('register-section');
+        const otpSection = document.getElementById('otp-section');
+        const successSection = document.getElementById('success-section');
+        const registerForm = document.getElementById('register-form');
+        const registerError = document.getElementById('register-error');
+        const otpError = document.getElementById('otp-error');
+        const resendLink = document.getElementById('resend-otp-link');
+        const resendTimer = document.getElementById('resend-timer');
+
+        let timerInterval;
+
+        function startResendTimer() {
+            let timeLeft = 30;
+            resendLink.disabled = true;
+            resendLink.style.color = 'var(--text-secondary)';
+            resendLink.style.cursor = 'not-allowed';
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                resendTimer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resendLink.disabled = false;
+                    resendLink.style.color = 'var(--text-primary)';
+                    resendLink.style.cursor = 'pointer';
+                    resendTimer.parentElement.innerHTML = 'Resend Code';
+                }
+            }, 1000);
+        }
+
+        function checkPasswordMatch() {
+            var pw = document.getElementById('password').value;
+            var cpw = document.getElementById('confirmPassword').value;
+            var msg = document.getElementById('pwMatchMsg');
+            if (cpw.length === 0) msg.style.color = 'transparent';
+            else if (pw === cpw) {
+                msg.textContent = '✓ Passwords match';
+                msg.style.color = '#059669';
+            } else {
+                msg.textContent = '✗ Passwords do not match';
+                msg.style.color = '#dc2626';
+            }
+        }
+
+        // Handle OTP Input Focus
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Step 1: Register (Initiate OTP)
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('register-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Sending OTP...';
+            btn.disabled = true;
+            registerError.style.display = 'none';
+
+            const formData = new FormData(registerForm);
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('display-email').textContent = formData.get('email');
+                    registerSection.style.transition = 'opacity 0.3s ease';
+                    registerSection.style.opacity = '0';
+                    setTimeout(() => {
+                        registerSection.style.display = 'none';
+                        otpSection.style.display = 'block';
+                        otpSection.style.opacity = '0';
+                        setTimeout(() => otpSection.style.opacity = '1', 50);
+                    }, 300);
+                    startResendTimer();
+                } else {
+                    document.getElementById('error-text').textContent = data.error || 'System error. Try again.';
+                    registerError.style.display = 'block';
+                }
+            } catch (err) {
+                document.getElementById('error-text').textContent = 'Connection failed. Check your internet.';
+                registerError.style.display = 'block';
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Step 2: Verify OTP
+        document.getElementById('verify-otp-btn').addEventListener('click', async () => {
+            const otpCode = Array.from(otpInputs).map(i => i.value).join('');
+            if (otpCode.length < 6) return alert('Enter full 6-digit code');
+
+            const btn = document.getElementById('verify-otp-btn');
+            btn.textContent = 'Verifying...';
+            btn.disabled = true;
+            otpError.style.display = 'none';
+
+            const email = document.getElementById('reg-email').value;
+            const params = new URLSearchParams();
+            params.append('email', email);
+            params.append('otp', otpCode);
+
+            try {
+                const response = await fetch('/verify-otp', {
+                    method: 'POST',
+                    body: params
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    otpSection.style.opacity = '0';
+                    setTimeout(() => {
+                        otpSection.style.display = 'none';
+                        successSection.style.display = 'block';
+                    }, 300);
+                } else {
+                    document.getElementById('otp-error-text').textContent = data.error;
+                    otpError.style.display = 'block';
+                    otpInputs.forEach(i => i.value = '');
+                    otpInputs[0].focus();
+                }
+            } catch (err) {
+                alert('Verification failed. Try again.');
+            } finally {
+                btn.textContent = 'Verify Account';
+                btn.disabled = false;
+            }
+        });
+
+        // Step 3: Resend OTP
+        resendLink.addEventListener('click', async () => {
+            if (resendLink.disabled) return;
+            const email = document.getElementById('reg-email').value;
+            const params = new URLSearchParams();
+            params.append('email', email);
+
+            try {
+                const response = await fetch('/resend-otp', { method: 'POST', body: params });
+                if (response.ok) {
+                    alert('A new code has been sent.');
+                    startResendTimer();
+                }
+            } catch (err) {
+                alert('Failed to resend. Try again.');
+            }
+        });
+
+        document.getElementById('back-to-register').addEventListener('click', (e) => {
+            e.preventDefault();
+            otpSection.style.display = 'none';
+            registerSection.style.display = 'block';
+            registerSection.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title>Admin Support | ÉPURE Admin</title>
+</head>
+<body style="background: var(--bg-primary); display: flex;">
+    <div th:replace="~{admin/dashboard :: admin-nav}"></div>
+
+    <main style="margin-left: 280px; flex: 1; padding: 60px 5% 60px;">
+        <div style="margin-bottom: 40px;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; color: var(--text-primary);">Admin Support</h1>
+            <p style="color: var(--text-secondary); font-size: 1rem;">Internal tools and assistance for ÉPURE administrators.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+            <!-- Support Channel Card -->
+            <div style="background: white; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-medium); border: 1px solid rgba(0,0,0,0.05);">
+                <div style="width: 60px; height: 60px; border-radius: 16px; background: #fdfaf6; color: #d8b892; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 25px;">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px;">Technical Assistance</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Facing issues with the dashboard or database? Our technical team is available to help you resolve any system-level problems.</p>
+                <a href="mailto:tech@epure.com" style="display: inline-block; padding: 12px 24px; background: #2b1f18; color: #d8b892; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Contact Tech Team</a>
+            </div>
+
+            <!-- Documentation Card -->
+            <div style="background: white; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-medium); border: 1px solid rgba(0,0,0,0.05);">
+                <div style="width: 60px; height: 60px; border-radius: 16px; background: #fdfaf6; color: #d8b892; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 25px;">
+                    <i class="fa-solid fa-book"></i>
+                </div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px;">Admin Guide</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Learn how to manage products, curate moodboards, and handle design consultations effectively using the ÉPURE admin tools.</p>
+                <a href="#" style="display: inline-block; padding: 12px 24px; border: 2px solid #2b1f18; color: #2b1f18; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#2b1f18'; this.style.color='#d8b892'" onmouseout="this.style.background='transparent'; this.style.color='#2b1f18'">View Documentation</a>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        @media (max-width: 992px) {
+            main { margin-left: 0 !important; padding: 40px 2.5% !important; }
+            .sidebar { display: none; }
+        }
+    </style>
+</body>
+</html>
