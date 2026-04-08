@@ -4,12 +4,13 @@ import com.project2.entity.DesignChatMessage;
 import com.project2.entity.DesignChatSession;
 import com.project2.service.DesignChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -38,21 +39,37 @@ public class AdminDesignChatController {
         return "admin/design_chat_detail";
     }
 
-    @PostMapping("/reply")
+    /** Polling endpoint — returns all messages as JSON for real-time sync */
+    @GetMapping("/{sessionId}/messages")
     @ResponseBody
-    public ResponseEntity<?> sendReply(@RequestParam Long sessionId, @RequestParam String text) {
-        DesignChatMessage message = chatService.sendMessage(sessionId, "ADMIN", text);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<List<DesignChatMessage>> pollMessages(@PathVariable Long sessionId) {
+        return ResponseEntity.ok(chatService.getMessages(sessionId));
     }
 
-    @PostMapping("/upload")
+    /** Unified admin reply: supports text + optional image in one request */
+    @PostMapping("/reply")
     @ResponseBody
-    public ResponseEntity<?> uploadFile(@RequestParam Long sessionId, @RequestParam MultipartFile file) {
+    public ResponseEntity<?> sendReply(
+            @RequestParam Long sessionId,
+            @RequestParam(value = "text", required = false) String text,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
-            DesignChatMessage message = chatService.uploadFile(sessionId, "ADMIN", file);
-            return ResponseEntity.ok(message);
+            if ((text == null || text.isBlank()) && (image == null || image.isEmpty())) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Message or image required"));
+            }
+            if (image != null && !image.isEmpty()) {
+                String ct = image.getContentType();
+                if (ct == null || !ct.startsWith("image/")) {
+                    return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Only image files are allowed"));
+                }
+                if (image.getSize() > 5 * 1024 * 1024) {
+                    return ResponseEntity.badRequest().body(Map.of("success", false, "error", "Image must be under 5MB"));
+                }
+            }
+            DesignChatMessage message = chatService.sendCombinedMessage(sessionId, "ADMIN", text, image);
+            return ResponseEntity.ok(Map.of("success", true, "message", message));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.internalServerError().body(Map.of("success", false, "error", e.getMessage()));
         }
     }
 

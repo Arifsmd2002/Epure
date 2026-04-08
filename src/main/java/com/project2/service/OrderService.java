@@ -60,6 +60,33 @@ public class OrderService {
         return order;
     }
 
+    public Order createOrderFromProduct(User user, Product product, int quantity, String firstName, String lastName, String streetAddress, 
+                                        String city, String postalCode, String country, String email, String paymentMethod) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setFirstName(firstName);
+        order.setLastName(lastName);
+        order.setStreetAddress(streetAddress);
+        order.setCity(city);
+        order.setPostalCode(postalCode);
+        order.setCountry(country);
+        order.setEmail(email);
+        order.setPaymentMethod(paymentMethod);
+
+        BigDecimal subtotal = product.getPrice().multiply(new BigDecimal(quantity));
+        BigDecimal tax = subtotal.multiply(new BigDecimal("0.10"));
+        order.setTotalAmount(subtotal.add(tax));
+
+        order = orderRepository.save(order);
+
+        OrderItem orderItem = new OrderItem(order, product, quantity, product.getPrice());
+        orderItemRepository.save(orderItem);
+        order.getItems().add(orderItem);
+
+        return order;
+    }
+
+
     public void updateOrderStatus(Long orderId, String status) {
         orderRepository.findById(orderId).ifPresent(order -> {
             order.setOrderStatus(status);

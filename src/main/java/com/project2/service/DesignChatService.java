@@ -47,6 +47,35 @@ public class DesignChatService {
         return messageRepository.save(message);
     }
 
+    /**
+     * Unified send: creates one message with optional text + optional image attachment.
+     * This fixes the issue where text and images were sent as two separate messages.
+     */
+    @Transactional
+    public DesignChatMessage sendCombinedMessage(Long sessionId, String senderType, String text, MultipartFile image) throws IOException {
+        DesignChatSession session = sessionRepository.findById(sessionId).orElseThrow();
+
+        // Use text if present, otherwise use placeholder for image-only messages
+        String messageText = (text != null && !text.isBlank()) ? text : null;
+        DesignChatMessage message = new DesignChatMessage(session, senderType, messageText);
+        message = messageRepository.save(message);
+
+        if (image != null && !image.isEmpty()) {
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+            Files.copy(image.getInputStream(), uploadPath.resolve(fileName));
+            String fileUrl = "/uploads/design-chat/" + fileName;
+
+            DesignChatAttachment attachment = new DesignChatAttachment(message, fileUrl, image.getContentType());
+            attachmentRepository.save(attachment);
+            message.getAttachments().add(attachment);
+        }
+        return message;
+    }
+
     @Transactional
     public DesignChatMessage uploadFile(Long sessionId, String senderType, MultipartFile file) throws IOException {
         DesignChatSession session = sessionRepository.findById(sessionId).orElseThrow();

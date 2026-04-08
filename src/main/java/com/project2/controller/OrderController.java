@@ -18,6 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import java.util.Map;
 import java.util.HashMap;
+import com.project2.entity.Product;
+import com.project2.service.ProductService;
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 @SuppressWarnings("null")
@@ -35,19 +39,57 @@ public class OrderController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private ProductService productService;
+
+    @PostMapping("/buy-now/{productId}")
+    public String buyNow(@PathVariable Long productId, HttpSession session) {
+        Product product = productService.getProductById(productId).orElse(null);
+        if (product == null) {
+            return "redirect:/shop?error=product_not_found";
+        }
+
+        session.setAttribute("buyNowProduct", product);
+        session.setAttribute("buyNowQuantity", 1);
+        return "redirect:/checkout";
+    }
+
+
     @GetMapping("/checkout")
-    public String showCheckout(Model model) {
+    public String showCheckout(Model model, HttpSession session) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if ("anonymousUser".equals(username)) {
+            return "redirect:/login";
+        }
         User user = userService.findByUsername(username).orElseThrow();
         
+        Product buyNowProduct = (Product) session.getAttribute("buyNowProduct");
+        
+        if (buyNowProduct != null) {
+            int quantity = (int) session.getAttribute("buyNowQuantity");
+            BigDecimal subtotal = buyNowProduct.getPrice().multiply(new BigDecimal(quantity));
+            BigDecimal tax = subtotal.multiply(new BigDecimal("0.10"));
+            BigDecimal total = subtotal.add(tax);
+
+            model.addAttribute("isBuyNow", true);
+            model.addAttribute("product", buyNowProduct);
+            model.addAttribute("quantity", quantity);
+            model.addAttribute("subtotal", subtotal);
+            model.addAttribute("tax", tax);
+            model.addAttribute("total", total);
+        } else {
+            model.addAttribute("isBuyNow", false);
+            model.addAttribute("cart", cartService.getCart());
+            model.addAttribute("subtotal", cartService.getSubtotal());
+            model.addAttribute("tax", cartService.getSubtotal().multiply(new BigDecimal("0.10")));
+            model.addAttribute("total", cartService.getSubtotal().add(cartService.getSubtotal().multiply(new BigDecimal("0.10"))));
+        }
+        
         model.addAttribute("user", user);
-        model.addAttribute("cart", cartService.getCart());
-        model.addAttribute("subtotal", cartService.getSubtotal());
-        model.addAttribute("tax", cartService.getSubtotal().multiply(new BigDecimal("0.10")));
-        model.addAttribute("total", cartService.getSubtotal().add(cartService.getSubtotal().multiply(new BigDecimal("0.10"))));
         model.addAttribute("title", "Checkout");
         return "checkout";
     }
+
 
     @PostMapping("/checkout/process")
     public String processOrder(@RequestParam String firstName,
@@ -60,6 +102,8 @@ public class OrderController {
                                @RequestParam String paymentMethod,
                                @RequestParam(required = false) String upiId,
                                @RequestParam(required = false) String upiName,
+                               @RequestParam(required = false) Integer quantity,
+                               HttpSession session,
                                Model model) {
         
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -78,7 +122,20 @@ public class OrderController {
                 return "redirect:/checkout?error=validation_failed";
             }
 
-            Order order = orderService.createOrder(user, firstName, lastName, streetAddress, city, postalCode, country, email, paymentMethod);
+            Product buyNowProduct = (Product) session.getAttribute("buyNowProduct");
+            Order order;
+
+            if (buyNowProduct != null) {
+                int finalQuantity = (quantity != null) ? quantity : (int) session.getAttribute("buyNowQuantity");
+                order = orderService.createOrderFromProduct(user, buyNowProduct, finalQuantity, firstName, lastName, streetAddress, city, postalCode, country, email, paymentMethod);
+                session.removeAttribute("buyNowProduct");
+                session.removeAttribute("buyNowQuantity");
+            } else {
+
+                order = orderService.createOrder(user, firstName, lastName, streetAddress, city, postalCode, country, email, paymentMethod);
+                // Clear cart
+                cartService.clearCart();
+            }
             
             if ("UPI".equals(paymentMethod)) {
                 if (upiId == null || upiId.trim().isEmpty() || !upiId.contains("@") || upiName == null || upiName.trim().isEmpty()) {
@@ -94,15 +151,13 @@ public class OrderController {
             // Send email notification
             emailService.sendNewOrderEmail("arifsmd7989@gmail.com", order.getId(), order.getEmail(), order.getTotalAmount().toString(), order.getPaymentMethod(), "ORDER_PLACED");
 
-            // Clear cart
-            cartService.clearCart();
-            
             return "redirect:/order-success?orderId=" + order.getId();
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/cart?error=checkout_failed";
         }
     }
+
 
     @GetMapping("/order-success")
     public String orderSuccess(@RequestParam Long orderId, Model model) {

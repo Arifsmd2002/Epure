@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head th:replace="~{layout :: head}">
+    <title>AI Room Analyzer | ÉPURE</title>
+</head>
+
+<body th:replace="~{layout :: layout(~{::main-content}, null, null)}">
+<main-content>
+
+<!-- ============================================================
+     AI ROOM ANALYZER PAGE
+     ============================================================ -->
+<div id="room-analyzer-page">
+
+    <!-- ── Hero Section ── -->
+    <section class="ra-hero">
+        <div class="ra-hero-bg"></div>
+        <div class="ra-hero-content" data-aos="fade-up">
+            <div class="ra-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Powered by Gemini AI</span>
+            </div>
+            <h1 class="ra-hero-title">Your Personal<br><span class="ra-gradient-text">Interior Stylist</span></h1>
+            <p class="ra-hero-subtitle">Upload a photo of any room and receive bespoke design recommendations — furniture suggestions, color palettes, layout plans, and curated products from ÉPURE's collection.</p>
+            <div class="ra-hero-stats">
+                <div class="ra-stat"><span class="ra-stat-num">5+</span><span class="ra-stat-label">Recommendation Types</span></div>
+                <div class="ra-stat-divider"></div>
+                <div class="ra-stat"><span class="ra-stat-num">100+</span><span class="ra-stat-label">Epure Products Matched</span></div>
+                <div class="ra-stat-divider"></div>
+                <div class="ra-stat"><span class="ra-stat-num">AI</span><span class="ra-stat-label">Vision Analysis</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Upload Section ── -->
+    <section class="ra-upload-section">
+        <div class="ra-upload-container" data-aos="fade-up">
+
+            <!-- Upload Area -->
+            <div class="ra-upload-card" id="ra-upload-card">
+                <div class="ra-upload-dropzone" id="ra-dropzone">
+                    <input type="file" id="ra-file-input" accept="image/jpeg,image/png,image/webp,image/jpg" style="display:none;">
+
+                    <!-- Default state -->
+                    <div class="ra-dropzone-default" id="ra-dropzone-default">
+                        <div class="ra-upload-icon-wrapper">
+                            <i class="fa-solid fa-camera-retro ra-upload-icon"></i>
+                            <div class="ra-upload-pulse"></div>
+                        </div>
+                        <h3 class="ra-upload-title">Drop your room photo here</h3>
+                        <p class="ra-upload-subtitle">or click to browse — JPEG, PNG, WEBP up to 10MB</p>
+                        <button class="ra-browse-btn" onclick="document.getElementById('ra-file-input').click()">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            Select Room Image
+                        </button>
+                        <div class="ra-upload-tips">
+                            <div class="ra-tip"><i class="fa-solid fa-lightbulb"></i><span>Bedrooms, living rooms, kitchens — any space works</span></div>
+                            <div class="ra-tip"><i class="fa-solid fa-expand"></i><span>Wider angle shots give better results</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Preview state -->
+                    <div class="ra-dropzone-preview" id="ra-dropzone-preview" style="display:none;">
+                        <img id="ra-preview-img" alt="Room preview" class="ra-preview-img">
+                        <div class="ra-preview-overlay">
+                            <button class="ra-change-photo-btn" onclick="document.getElementById('ra-file-input').click()">
+                                <i class="fa-solid fa-rotate"></i> Change Photo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button class="ra-analyze-btn" id="ra-analyze-btn" onclick="analyzeRoom()" disabled>
+                    <span class="ra-btn-text">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Analyze My Room
+                    </span>
+                    <span class="ra-btn-loader" style="display:none;">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        Analyzing with AI...
+                    </span>
+                </button>
+            </div>
+
+            <!-- How it works -->
+            <div class="ra-how-it-works" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="ra-how-title">How it works</h3>
+                <div class="ra-steps">
+                    <div class="ra-step">
+                        <div class="ra-step-num">01</div>
+                        <div class="ra-step-content">
+                            <strong>Upload</strong>
+                            <p>Share a clear photo of your room</p>
+                        </div>
+                    </div>
+                    <div class="ra-step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    <div class="ra-step">
+                        <div class="ra-step-num">02</div>
+                        <div class="ra-step-content">
+                            <strong>Analyze</strong>
+                            <p>AI scans style, furniture & light</p>
+                        </div>
+                    </div>
+                    <div class="ra-step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    <div class="ra-step">
+                        <div class="ra-step-num">03</div>
+                        <div class="ra-step-content">
+                            <strong>Discover</strong>
+                            <p>Get curated ÉPURE recommendations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Results Section (hidden until analysis) ── -->
+    <section class="ra-results-section" id="ra-results-section" style="display:none;">
+
+        <!-- Room Summary Banner -->
+        <div class="ra-results-header" id="ra-header-banner" data-aos="fade-up">
+            <div class="ra-results-meta">
+                <div class="ra-results-badge" id="ra-room-type-badge"></div>
+                <div class="ra-results-style" id="ra-style-badge"></div>
+            </div>
+            <div class="ra-insight-quote" id="ra-insight-quote"></div>
+        </div>
+
+        <div class="ra-results-grid">
+
+            <!-- Analysis Column -->
+            <div class="ra-col ra-col-left" data-aos="fade-right">
+
+                <!-- Current Room Analysis -->
+                <div class="ra-card">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <h3>Room Analysis</h3>
+                    </div>
+                    <div class="ra-analysis-grid" id="ra-analysis-grid"></div>
+                </div>
+
+                <!-- Color Palette -->
+                <div class="ra-card">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-palette"></i>
+                        <h3>Recommended Color Palette</h3>
+                    </div>
+                    <div class="ra-palette-grid" id="ra-palette-grid"></div>
+                </div>
+
+                <!-- Layout Plan -->
+                <div class="ra-card">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-object-group"></i>
+                        <h3>Layout Improvement Plan</h3>
+                    </div>
+                    <div class="ra-layout-text" id="ra-layout-text"></div>
+                </div>
+            </div>
+
+            <!-- Recommendations Column -->
+            <div class="ra-col ra-col-right" data-aos="fade-left">
+
+                <!-- Furniture Suggestions -->
+                <div class="ra-card">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-couch"></i>
+                        <h3>Furniture Suggestions</h3>
+                    </div>
+                    <div class="ra-furniture-list" id="ra-furniture-list"></div>
+                </div>
+
+                <!-- Epure Product Matches -->
+                <div class="ra-card ra-card-highlight">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-star"></i>
+                        <h3>Available in ÉPURE</h3>
+                        <span class="ra-badge-small">Shop Now</span>
+                    </div>
+                    <div class="ra-epure-matches" id="ra-epure-matches"></div>
+                </div>
+
+                <!-- Custom Handcrafted -->
+                <div class="ra-card">
+                    <div class="ra-card-header">
+                        <i class="fa-solid fa-hammer"></i>
+                        <h3>Custom Handcrafted Options</h3>
+                    </div>
+                    <div class="ra-custom-list" id="ra-custom-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="ra-cta-section" data-aos="fade-up">
+            <h3>Ready to transform your space?</h3>
+            <p>Browse the recommended products or book a personal design consultation with our experts.</p>
+            <div class="ra-cta-buttons">
+                <a href="/shop" class="ra-cta-btn ra-cta-primary"><i class="fa-solid fa-bag-shopping"></i> Shop the Collection</a>
+                <button class="ra-cta-btn ra-cta-secondary" onclick="scrollToUpload()"><i class="fa-solid fa-rotate-right"></i> Analyze Another Room</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- ============================================================
+     STYLES
+     ============================================================ -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+        --epure-dark: #1a120b;
+        --epure-warm: #2b1f18;
+        --epure-gold: #d8b892;
+        --epure-cream: #FAF9F6;
+        --epure-beige: #f5f1e9;
+        --epure-soft: #e8e0d4;
+        --epure-text: #3d3028;
+        --epure-muted: #8e7d6a;
+        --ra-accent: #c8a97d;
+        --ra-gradient: linear-gradient(135deg, #d8b892 0%, #a0784d 100%);
+        --ra-card-shadow: 0 8px 32px rgba(43, 31, 24, 0.08);
+        --ra-radius: 20px;
+    }
+
+    #room-analyzer-page { background: var(--epure-cream); min-height: 100vh; }
+
+    /* ── Hero ── */
+    .ra-hero {
+        position: relative;
+        min-height: 86vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+        background: var(--epure-dark);
+    }
+    .ra-hero-bg {
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(216,184,146,0.12) 0%, transparent 70%),
+                    url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1600&q=80') center/cover no-repeat;
+        opacity: 0.4;
+        filter: saturate(0.5);
+    }
+    .ra-hero-content { position: relative; z-index: 2; max-width: 780px; padding: 0 24px; }
+    .ra-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(216,184,146,0.12); border: 1px solid rgba(216,184,146,0.3);
+        color: var(--epure-gold); padding: 8px 18px; border-radius: 999px;
+        font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;
+        margin-bottom: 28px; backdrop-filter: blur(10px);
+    }
+    .ra-hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.8rem, 6vw, 5rem); color: #fff; line-height: 1.15; margin-bottom: 24px;
+    }
+    .ra-gradient-text {
+        background: var(--ra-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ra-hero-subtitle {
+        font-size: 1.05rem; color: rgba(255,255,255,0.65); line-height: 1.8; max-width: 580px; margin: 0 auto 40px;
+    }
+    .ra-hero-stats { display: flex; align-items: center; justify-content: center; gap: 0; }
+    .ra-stat { display: flex; flex-direction: column; align-items: center; padding: 0 30px; }
+    .ra-stat-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--epure-gold); font-weight: 600; }
+    .ra-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .ra-stat-divider { width: 1px; height: 40px; background: rgba(216,184,146,0.25); }
+
+    /* ── Upload Section ── */
+    .ra-upload-section { padding: 80px 5%; background: var(--epure-cream); }
+    .ra-upload-container { max-width: 860px; margin: 0 auto; }
+    .ra-upload-card {
+        background: white; border-radius: var(--ra-radius); border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: var(--ra-card-shadow); overflow: hidden;
+        padding: 40px;
+    }
+    .ra-upload-dropzone {
+        border: 2px dashed rgba(216,184,146,0.4); border-radius: 16px;
+        background: var(--epure-beige); min-height: 320px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .ra-upload-dropzone.drag-over { border-color: var(--epure-gold); background: rgba(216,184,146,0.08); }
+    .ra-dropzone-default { text-align: center; padding: 40px; }
+    .ra-upload-icon-wrapper { position: relative; display: inline-block; margin-bottom: 24px; }
+    .ra-upload-icon { font-size: 3rem; color: var(--ra-accent); }
+    .ra-upload-pulse {
+        position: absolute; inset: -12px; border-radius: 50%;
+        border: 2px solid rgba(216,184,146,0.3); animation: ra-pulse 2s infinite;
+    }
+    @keyframes ra-pulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.15); opacity: 0.15; } }
+    .ra-upload-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--epure-text); margin-bottom: 8px; }
+    .ra-upload-subtitle { color: var(--epure-muted); font-size: 0.9rem; margin-bottom: 24px; }
+    .ra-browse-btn {
+        background: var(--epure-warm); color: var(--epure-gold);
+        border: none; border-radius: 12px; padding: 14px 32px;
+        font-size: 0.9rem; font-weight: 600; cursor: pointer; letter-spacing: 0.5px;
+        transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px;
+    }
+    .ra-browse-btn:hover { background: var(--epure-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .ra-upload-tips { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .ra-tip { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--epure-muted); }
+    .ra-tip i { color: var(--ra-accent); }
+
+    /* Preview */
+    .ra-dropzone-preview { width: 100%; height: 350px; position: relative; }
+    .ra-preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ra-preview-overlay {
+        position: absolute; inset: 0; background: rgba(0,0,0,0.35);
+        display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;
+    }
+    .ra-dropzone-preview:hover .ra-preview-overlay { opacity: 1; }
+    .ra-change-photo-btn {
+        background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.3); color: white;
+        padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 0.9rem;
+        display: flex; align-items: center; gap: 8px; transition: 0.2s;
+    }
+    .ra-change-photo-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Analyze Button */
+    .ra-analyze-btn {
+        width: 100%; margin-top: 24px; padding: 18px;
+        background: var(--ra-gradient); color: var(--epure-dark);
+        border: none; border-radius: 14px; font-size: 1rem; font-weight: 700;
+        cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .ra-analyze-btn:disabled { background: linear-gradient(135deg, #c5b5a3 0%, #a09080 100%); cursor: not-allowed; opacity: 0.6; }
+    .ra-analyze-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(200,169,125,0.35); }
+    .ra-btn-loader, .ra-btn-text { display: flex; align-items: center; gap: 10px; }
+
+    /* How it works */
+    .ra-how-it-works { margin-top: 48px; text-align: center; }
+    .ra-how-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--epure-text); margin-bottom: 28px; }
+    .ra-steps { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .ra-step { display: flex; align-items: center; gap: 16px; }
+    .ra-step-num {
+        width: 48px; height: 48px; border-radius: 50%; background: var(--epure-beige);
+        border: 1px solid rgba(216,184,146,0.4); display: flex; align-items: center; justify-content: center;
+        font-family: 'Playfair Display', serif; font-size: 0.85rem; color: var(--ra-accent); font-weight: 600;
+        flex-shrink: 0;
+    }
+    .ra-step-content strong { display: block; font-size: 0.9rem; color: var(--epure-text); }
+    .ra-step-content p { font-size: 0.78rem; color: var(--epure-muted); margin: 3px 0 0; }
+    .ra-step-arrow { color: rgba(216,184,146,0.4); font-size: 0.9rem; }
+
+    /* ── Results Section ── */
+    .ra-results-section { padding: 0 5% 80px; }
+
+    /* Header Banner */
+    .ra-results-header {
+        background: var(--epure-warm); border-radius: var(--ra-radius);
+        padding: 40px 48px; margin-bottom: 32px;
+        display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+    }
+    .ra-results-meta { display: flex; flex-direction: column; gap: 12px; }
+    .ra-results-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(216,184,146,0.15); border: 1px solid rgba(216,184,146,0.3);
+        color: var(--epure-gold); padding: 8px 20px; border-radius: 999px;
+        font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .ra-results-style {
+        font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #fff; font-weight: 600;
+    }
+    .ra-insight-quote {
+        max-width: 380px; font-style: italic; color: rgba(216,184,146,0.7);
+        font-size: 0.95rem; line-height: 1.7; border-left: 2px solid rgba(216,184,146,0.3);
+        padding-left: 20px;
+    }
+
+    /* Results Grid */
+    .ra-results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .ra-results-grid { grid-template-columns: 1fr; } }
+    .ra-col { display: flex; flex-direction: column; gap: 24px; }
+
+    /* Cards */
+    .ra-card {
+        background: white; border-radius: var(--ra-radius);
+        border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--ra-card-shadow); padding: 28px;
+    }
+    .ra-card-highlight { border-color: rgba(216,184,146,0.4); background: linear-gradient(135deg, #fff8f0 0%, #fff 100%); }
+    .ra-card-header {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+        padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .ra-card-header i { color: var(--ra-accent); font-size: 1.1rem; }
+    .ra-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--epure-text); flex: 1; }
+    .ra-badge-small {
+        background: var(--epure-warm); color: var(--epure-gold);
+        font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        padding: 4px 10px; border-radius: 999px;
+    }
+
+    /* Analysis Grid */
+    .ra-analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ra-analysis-item {
+        background: var(--epure-beige); border-radius: 12px; padding: 16px;
+    }
+    .ra-analysis-label {
+        font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--epure-muted);
+        font-weight: 600; margin-bottom: 6px;
+    }
+    .ra-analysis-value { font-size: 0.88rem; color: var(--epure-text); line-height: 1.5; }
+
+    /* Color Palette */
+    .ra-palette-grid { display: flex; flex-direction: column; gap: 12px; }
+    .ra-palette-item { display: flex; align-items: center; gap: 14px; }
+    .ra-palette-swatch {
+        width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.8);
+    }
+    .ra-palette-info {}
+    .ra-palette-name { font-size: 0.9rem; font-weight: 600; color: var(--epure-text); }
+    .ra-palette-usage { font-size: 0.78rem; color: var(--epure-muted); margin-top: 2px; }
+    .ra-palette-hex { font-size: 0.72rem; font-family: monospace; color: var(--epure-muted); margin-top: 1px; }
+
+    /* Layout Text */
+    .ra-layout-text {
+        font-size: 0.92rem; color: var(--epure-text); line-height: 1.8;
+        background: var(--epure-beige); border-radius: 12px; padding: 20px;
+    }
+
+    /* Furniture List */
+    .ra-furniture-list { display: flex; flex-direction: column; gap: 16px; }
+    .ra-furniture-item {
+        display: flex; gap: 14px; align-items: flex-start; padding: 16px;
+        background: var(--epure-beige); border-radius: 14px; transition: 0.2s;
+    }
+    .ra-furniture-item:hover { background: var(--epure-soft); }
+    .ra-furniture-icon {
+        width: 42px; height: 42px; border-radius: 10px; background: var(--epure-warm);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        color: var(--epure-gold); font-size: 0.9rem;
+    }
+    .ra-furniture-name { font-size: 0.92rem; font-weight: 600; color: var(--epure-text); margin-bottom: 4px; }
+    .ra-furniture-reason { font-size: 0.8rem; color: var(--epure-muted); line-height: 1.5; }
+    .ra-furniture-price { font-size: 0.8rem; color: var(--ra-accent); font-weight: 600; margin-top: 4px; }
+    .ra-from-epure-tag {
+        display: inline-flex; align-items: center; gap: 4px;
+        background: rgba(216,184,146,0.15); border: 1px solid rgba(216,184,146,0.3);
+        color: var(--ra-accent); padding: 2px 8px; border-radius: 999px;
+        font-size: 0.68rem; font-weight: 600; text-transform: uppercase; margin-top: 6px;
+    }
+
+    /* Epure Matches */
+    .ra-epure-matches { display: flex; flex-direction: column; gap: 14px; }
+    .ra-epure-match-item {
+        padding: 16px; border: 1px solid rgba(216,184,146,0.2); border-radius: 14px;
+        background: rgba(255,255,255,0.7); transition: 0.2s;
+        cursor: pointer; text-decoration: none;
+    }
+    .ra-epure-match-item:hover { border-color: rgba(216,184,146,0.5); background: rgba(216,184,146,0.05); transform: translateX(4px); }
+    .ra-match-name { font-size: 0.92rem; font-weight: 600; color: var(--epure-text); display: flex; align-items: center; gap: 8px; }
+    .ra-match-name i { color: var(--ra-accent); font-size: 0.8rem; }
+    .ra-match-reason { font-size: 0.8rem; color: var(--epure-muted); margin-top: 5px; line-height: 1.5; }
+    .ra-match-link { font-size: 0.78rem; color: var(--ra-accent); margin-top: 8px; display: flex; align-items: center; gap: 5px; font-weight: 600; }
+
+    /* Custom list */
+    .ra-custom-list { display: flex; flex-direction: column; gap: 16px; }
+    .ra-custom-item {
+        padding: 18px; background: var(--epure-beige); border-radius: 14px;
+    }
+    .ra-custom-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ra-custom-name { font-size: 0.92rem; font-weight: 600; color: var(--epure-text); }
+    .ra-custom-price {
+        font-size: 0.75rem; background: var(--epure-warm); color: var(--epure-gold);
+        font-weight: 600; padding: 4px 10px; border-radius: 999px;
+    }
+    .ra-custom-desc { font-size: 0.82rem; color: var(--epure-muted); line-height: 1.6; }
+
+    /* CTA Section */
+    .ra-cta-section {
+        text-align: center; padding: 60px 40px;
+        background: var(--epure-warm); border-radius: var(--ra-radius); margin-top: 40px;
+    }
+    .ra-cta-section h3 { font-family: 'Playfair Display', serif; font-size: 2rem; color: #fff; margin-bottom: 12px; }
+    .ra-cta-section p { color: rgba(255,255,255,0.55); font-size: 1rem; margin-bottom: 32px; }
+    .ra-cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .ra-cta-btn {
+        padding: 14px 32px; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+        cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+        transition: all 0.3s; letter-spacing: 0.5px;
+    }
+    .ra-cta-primary { background: var(--ra-gradient); color: var(--epure-dark); border: none; }
+    .ra-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(200,169,125,0.3); }
+    .ra-cta-secondary {
+        background: transparent; color: var(--epure-gold);
+        border: 1px solid rgba(216,184,146,0.4);
+    }
+    .ra-cta-secondary:hover { background: rgba(216,184,146,0.1); }
+
+    /* ── Loading Overlay ── */
+    #ra-loading-overlay {
+        position: fixed; inset: 0; background: rgba(26,18,11,0.85);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; flex-direction: column; gap: 20px; backdrop-filter: blur(6px);
+    }
+    .ra-loader-icon { font-size: 3rem; color: var(--epure-gold); animation: ra-spin 1.6s linear infinite; }
+    @keyframes ra-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .ra-loader-text { color: var(--epure-gold); font-size: 1.1rem; font-weight: 500; letter-spacing: 0.5px; }
+    .ra-loader-sub { color: rgba(216,184,146,0.5); font-size: 0.85rem; }
+
+    /* ── Error Toast ── */
+    #ra-toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+        background: #e74c3c; color: white; padding: 14px 28px; border-radius: 999px;
+        font-size: 0.9rem; font-weight: 500; transition: 0.4s; z-index: 99999; opacity: 0;
+        display: flex; align-items: center; gap: 10px;
+    }
+    #ra-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+
+<!-- Loading Overlay -->
+<div id="ra-loading-overlay">
+    <i class="fa-solid fa-wand-magic-sparkles ra-loader-icon"></i>
+    <div class="ra-loader-text">Analyzing your room...</div>
+    <div class="ra-loader-sub">AI is scanning furniture, colors, lighting & space</div>
+</div>
+
+<!-- Error Toast -->
+<div id="ra-toast"><i class="fa-solid fa-circle-exclamation"></i><span id="ra-toast-msg"></span></div>
+
+<script>
+    // ── File Upload Logic ──
+    const fileInput = document.getElementById('ra-file-input');
+    const dropzone = document.getElementById('ra-dropzone');
+    const analyzeBtn = document.getElementById('ra-analyze-btn');
+    let selectedFile = null;
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleFileSelect(file);
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) handleFileSelect(file);
+    });
+    dropzone.addEventListener('click', (e) => {
+        if (!e.target.closest('button')) fileInput.click();
+    });
+
+    function handleFileSelect(file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('ra-preview-img').src = e.target.result;
+            document.getElementById('ra-dropzone-default').style.display = 'none';
+            document.getElementById('ra-dropzone-preview').style.display = 'block';
+            analyzeBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ── Analysis Logic ──
+    async function analyzeRoom() {
+        if (!selectedFile) return;
+
+        document.getElementById('ra-loading-overlay').style.display = 'flex';
+        setButtonLoading(true);
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+
+        try {
+            const response = await fetch('/api/room-analyzer/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                showToast(data.error || 'Analysis failed. Please try again.');
+                return;
+            }
+
+            renderResults(data.analysis);
+
+        } catch (err) {
+            showToast('Connection error. Please try again.');
+        } finally {
+            document.getElementById('ra-loading-overlay').style.display = 'none';
+            setButtonLoading(false);
+        }
+    }
+
+    function setButtonLoading(loading) {
+        const btn = document.getElementById('ra-analyze-btn');
+        btn.querySelector('.ra-btn-text').style.display = loading ? 'none' : 'flex';
+        btn.querySelector('.ra-btn-loader').style.display = loading ? 'flex' : 'none';
+        btn.disabled = loading;
+    }
+
+    // ── Render Results ──
+    function renderResults(a) {
+        document.getElementById('ra-results-section').style.display = 'block';
+        document.getElementById('ra-results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Header Banner
+        document.getElementById('ra-room-type-badge').innerHTML = `<i class="fa-solid fa-house"></i> ${a.roomType || 'Room'}`;
+        document.getElementById('ra-style-badge').textContent = a.styleRecommendation || '';
+        document.getElementById('ra-insight-quote').textContent = a.designInsight || '';
+
+        // Room Analysis Grid
+        const analysisEl = document.getElementById('ra-analysis-grid');
+        const ca = a.currentAnalysis || {};
+        const items = [
+            { label: 'Furniture', value: ca.existingFurniture },
+            { label: 'Color Scheme', value: ca.colorScheme },
+            { label: 'Lighting', value: ca.lightingAssessment },
+            { label: 'Space Usage', value: ca.spaceUtilization }
+        ];
+        analysisEl.innerHTML = items.map(i => `
+            <div class="ra-analysis-item">
+                <div class="ra-analysis-label">${i.label}</div>
+                <div class="ra-analysis-value">${i.value || '—'}</div>
+            </div>`).join('');
+
+        // Color Palette
+        const paletteEl = document.getElementById('ra-palette-grid');
+        paletteEl.innerHTML = (a.colorPalette || []).map(c => `
+            <div class="ra-palette-item">
+                <div class="ra-palette-swatch" style="background:${c.hex || '#c5b5a3'};"></div>
+                <div class="ra-palette-info">
+                    <div class="ra-palette-name">${c.name}</div>
+                    <div class="ra-palette-usage">${c.usage}</div>
+                    <div class="ra-palette-hex">${c.hex}</div>
+                </div>
+            </div>`).join('');
+
+        // Layout Text
+        document.getElementById('ra-layout-text').textContent = a.layoutImprovementPlan || '';
+
+        // Furniture Suggestions
+        const furnitureEl = document.getElementById('ra-furniture-list');
+        furnitureEl.innerHTML = (a.furnitureSuggestions || []).map(f => `
+            <div class="ra-furniture-item">
+                <div class="ra-furniture-icon"><i class="fa-solid fa-couch"></i></div>
+                <div>
+                    <div class="ra-furniture-name">${f.item}</div>
+                    <div class="ra-furniture-reason">${f.reason}</div>
+                    <div class="ra-furniture-price">${f.price || ''}</div>
+                    ${f.fromEpure ? '<span class="ra-from-epure-tag"><i class="fa-solid fa-check"></i> Available at ÉPURE</span>' : ''}
+                </div>
+            </div>`).join('');
+
+        // Epure Product Matches
+        const matchesEl = document.getElementById('ra-epure-matches');
+        matchesEl.innerHTML = (a.epureProductMatches || []).map(m => `
+            <a href="/shop?query=${encodeURIComponent(m.productName)}" class="ra-epure-match-item">
+                <div class="ra-match-name"><i class="fa-solid fa-star"></i> ${m.productName}</div>
+                <div class="ra-match-reason">${m.reason}</div>
+                <div class="ra-match-link">View in Shop <i class="fa-solid fa-arrow-right"></i></div>
+            </a>`).join('');
+
+        // Custom Handcrafted
+        const customEl = document.getElementById('ra-custom-list');
+        customEl.innerHTML = (a.customHandcraftedSuggestions || []).map(c => `
+            <div class="ra-custom-item">
+                <div class="ra-custom-item-header">
+                    <div class="ra-custom-name">${c.item}</div>
+                    <div class="ra-custom-price">${c.estimatedPrice || ''}</div>
+                </div>
+                <div class="ra-custom-desc">${c.description}</div>
+            </div>`).join('');
+    }
+
+    function scrollToUpload() {
+        document.getElementById('ra-upload-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('ra-toast');
+        document.getElementById('ra-toast-msg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+</script>
+
+</main-content>
+</body>
+</html>

@@ -153,24 +153,63 @@
                     <h3 style="font-size: 1.5rem; margin-bottom: 30px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 20px;">Your Selection</h3>
                     
                     <div style="max-height: 350px; overflow-y: auto; margin-bottom: 30px; padding-right: 10px;">
-                        <div th:each="item : ${cart}" style="display: grid; grid-template-columns: 80px 1fr; gap: 20px; align-items: center; margin-bottom: 25px;">
-                            <img th:src="${item.product.imageUrl}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
-                            <div>
-                                <h4 style="font-size: 0.9rem; margin-bottom: 5px;" th:text="${item.product.name}">Product Name</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${item.quantity + ' x ₹' + item.product.price}">1 x ₹0.00</p>
+                        <!-- Normal Cart flow -->
+                        <th:block th:unless="${isBuyNow}">
+                            <div th:each="item : ${cart}" style="display: grid; grid-template-columns: 80px 1fr; gap: 20px; align-items: center; margin-bottom: 25px;">
+                                <img th:src="${item.product.imageUrl}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
+                                <div>
+                                    <h4 style="font-size: 0.9rem; margin-bottom: 5px;" th:text="${item.product.name}">Product Name</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${item.quantity + ' x ₹' + item.product.price}">1 x ₹0.00</p>
+                                </div>
                             </div>
-                        </div>
-                        <p th:if="${cart.empty}" style="font-size: 0.9rem; color: var(--text-secondary); text-align: center; font-style: italic;">Reviewing your items...</p>
+                            <p th:if="${cart.empty}" style="font-size: 0.9rem; color: var(--text-secondary); text-align: center; font-style: italic;">Reviewing your items...</p>
+                        </th:block>
+
+                        <!-- Buy Now flow -->
+                        <th:block th:if="${isBuyNow}">
+                            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 20px; align-items: center; margin-bottom: 25px;">
+                                <img th:src="${product.imageUrl}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;">
+                                <div>
+                                    <h4 style="font-size: 0.9rem; margin-bottom: 5px;" th:text="${product.name}">Product Name</h4>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="number" name="quantity" id="buyNowQuantity" th:value="${quantity}" min="1" 
+                                               style="width: 50px; padding: 5px; border-radius: 5px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.8rem;"
+                                               onchange="updateBuyNowTotal()" oninput="updateBuyNowTotal()">
+                                        <p style="font-size: 0.8rem; color: var(--text-secondary);" th:text="' x ₹' + ${#numbers.formatDecimal(product.price, 1, 2)}"> x ₹0.00</p>
+                                    </div>
+                                    <input type="hidden" id="productPrice" th:value="${product.price}">
+                                </div>
+                            </div>
+                        </th:block>
                     </div>
+
+                    <script th:inline="javascript">
+                        function updateBuyNowTotal() {
+                            const quantInput = document.getElementById('buyNowQuantity');
+                            if (!quantInput) return;
+                            
+                            const quantity = parseInt(quantInput.value) || 1;
+                            const price = parseFloat(document.getElementById('productPrice').value);
+                            
+                            const subtotal = quantity * price;
+                            const tax = subtotal * 0.10;
+                            const total = subtotal + tax;
+                            
+                            document.getElementById('display-subtotal').textContent = '₹' + subtotal.toFixed(2);
+                            document.getElementById('display-tax').textContent = '₹' + tax.toFixed(2);
+                            document.getElementById('display-total').textContent = '₹' + total.toFixed(2);
+                        }
+                    </script>
 
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-secondary);">
                         <span>Subtotal</span>
-                        <span th:text="'₹' + ${#numbers.formatDecimal(subtotal, 1, 2)}">₹0.00</span>
+                        <span id="display-subtotal" th:text="'₹' + ${#numbers.formatDecimal(subtotal, 1, 2)}">₹0.00</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-secondary);">
                         <span>Estimated Tax (10%)</span>
-                        <span th:text="'₹' + ${#numbers.formatDecimal(tax, 1, 2)}">₹0.00</span>
+                        <span id="display-tax" th:text="'₹' + ${#numbers.formatDecimal(tax, 1, 2)}">₹0.00</span>
                     </div>
+
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-secondary);">
                         <span>Shipping</span>
                         <span style="color: #2e7d32; font-weight: 600;">Free</span>
@@ -178,8 +217,9 @@
                     
                     <div style="display: flex; justify-content: space-between; margin-bottom: 40px; font-size: 1.5rem; font-weight: 700; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
                         <span>Total</span>
-                        <span th:text="'₹' + ${#numbers.formatDecimal(total, 1, 2)}">₹0.00</span>
+                        <span id="display-total" th:text="'₹' + ${#numbers.formatDecimal(total, 1, 2)}">₹0.00</span>
                     </div>
+
                     
                     <button type="submit" class="btn btn-primary" style="width: 100%; height: 65px; display: flex; align-items: center; justify-content: center; background: var(--text-primary); color: var(--white); font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Place Your Order</button>
                     

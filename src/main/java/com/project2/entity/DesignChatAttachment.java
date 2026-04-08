@@ -1,5 +1,6 @@
 package com.project2.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +13,7 @@ public class DesignChatAttachment {
 
     @ManyToOne
     @JoinColumn(name = "message_id")
+    @JsonIgnore
     private DesignChatMessage message;
 
     private String fileUrl;

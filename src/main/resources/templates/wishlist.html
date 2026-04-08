@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head}">
+    <title th:text="${title}">Wishlist</title>
+</head>
+<body th:replace="~{layout :: layout(content=~{::main}, productId=null, productCategory=null)}">
+    <main>
+        <section style="padding: 120px 10%; min-height: 80vh;">
+            <div data-aos="fade-up">
+                <h4 style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; color: #8e7d6a; margin-bottom: 10px;">Your Curated Picks</h4>
+                <h1 style="font-size: 3.5rem; margin-bottom: 40px;">Wishlist</h1>
+            </div>
+
+            <!-- Empty Wishlist State -->
+            <div th:if="${wishlistProducts == null or #lists.isEmpty(wishlistProducts)}" 
+                 style="text-align: center; padding: 60px 0;" data-aos="fade-up">
+                <div style="font-size: 4rem; color: #d8b892; margin-bottom: 30px;">
+                    <i class="fa-regular fa-heart"></i>
+                </div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px;">Your wishlist is currently empty.</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    Save your favourite Nordic pieces here to create your dream space.
+                </p>
+                <a th:href="@{/shop}" class="btn btn-primary" style="padding: 15px 40px;">Start Curating</a>
+            </div>
+
+            <!-- Wishlist Grid -->
+            <div th:if="${wishlistProducts != null and !#lists.isEmpty(wishlistProducts)}" 
+                 class="product-grid">
+                <div class="product-card" th:each="product : ${wishlistProducts}" data-aos="fade-up">
+                    <div class="product-image-container">
+                        <a th:href="@{'/product/' + ${product.id}}">
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image">
+                        </a>
+                        <a th:href="@{'/wishlist/remove/' + ${product.id}}" class="wishlist-icon" style="opacity: 1; transform: translateY(0); color: #e74c3c;">
+                            <i class="fa-solid fa-heart"></i>
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-category" th:text="${product.category.name}">Category</p>
+                        <h3 class="product-title" th:text="${product.name}">Product Name</h3>
+                        <p class="product-price" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹0.00</p>
+                        <form th:action="@{/cart/add}" method="post">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

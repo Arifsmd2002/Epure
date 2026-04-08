@@ -453,6 +453,30 @@ nav.scrolled {
     color: var(--white);
 }
 
+.buy-now-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--beige-gold);
+    color: var(--warm-brown-dark);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+.buy-now-btn:hover {
+    background: var(--warm-brown-dark);
+    color: var(--beige-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+
 /* Animations */
 @keyframes fadeInDown {
     from { opacity: 0; transform: translateY(-30px); }

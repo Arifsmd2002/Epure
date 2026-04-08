@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.project2.service.WishlistService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,8 @@ public class MainController {
     private ProductService productService;
     @Autowired
     private MoodboardService moodboardService;
+    @Autowired
+    private WishlistService wishlistService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -88,7 +92,9 @@ public class MainController {
     }
 
     @GetMapping({"/moodboards/{idOrSlug}", "/moodboard/{idOrSlug}"})
-    public String moodboardDetail(@PathVariable String idOrSlug, Model model) {
+    public String moodboardDetail(@PathVariable String idOrSlug, 
+                                @RequestParam(required = false) Long productId,
+                                Model model) {
         Optional<Moodboard> moodboardOpt;
         try {
             Long id = Long.parseLong(idOrSlug);
@@ -101,8 +107,22 @@ public class MainController {
             return "redirect:/moodboards";
         }
         
-        model.addAttribute("moodboard", moodboardOpt.get());
-        model.addAttribute("title", moodboardOpt.get().getName());
+        Moodboard moodboard = moodboardOpt.get();
+        model.addAttribute("moodboard", moodboard);
+        model.addAttribute("title", moodboard.getName());
+        model.addAttribute("products", moodboard.getProducts());
+        
+        // Handle specific clicked product if requested
+        if (productId != null) {
+            productService.getProductById(productId).ifPresent(p -> {
+                model.addAttribute("productId", productId);
+                model.addAttribute("name", p.getName());
+                model.addAttribute("category", p.getCategory().getName());
+                model.addAttribute("price", p.getPrice());
+                model.addAttribute("image", p.getImageUrl());
+            });
+        }
+        
         return "moodboard-detail";
     }
 
@@ -127,5 +147,18 @@ public class MainController {
     public String account(Model model) {
         model.addAttribute("title", "My Account");
         return "account";
+    }
+    
+    @GetMapping("/wishlist")
+    public String wishlist(Model model) {
+        model.addAttribute("title", "My Wishlist");
+        model.addAttribute("wishlistProducts", wishlistService.getWishlistProducts());
+        return "wishlist";
+    }
+
+    @GetMapping("/room-analyzer")
+    public String roomAnalyzer(Model model) {
+        model.addAttribute("title", "AI Room Analyzer");
+        return "room-analyzer";
     }
 }

@@ -35,6 +35,7 @@
                     <a th:href="@{/shop(category='Plants')}" class="category-btn" th:classappend="${activeCategory == 'Plants'} ? 'active' : ''">Plants</a>
                     <a th:href="@{/shop(category='Storage')}" class="category-btn" th:classappend="${activeCategory == 'Storage'} ? 'active' : ''">Storage</a>
                     <a th:href="@{/shop(category='Pillows')}" class="category-btn" th:classappend="${activeCategory == 'Pillows'} ? 'active' : ''">Pillows</a>
+                    <a th:href="@{/shop(category='Beds')}" class="category-btn" th:classappend="${activeCategory == 'Beds'} ? 'active' : ''">Beds</a>
                 </div>
 
                 <div class="vibe-pills" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -53,13 +54,16 @@
                 <a th:href="@{/shop}" style="font-size: 0.8rem; color: var(--beige-gold); text-decoration: underline; margin-top: 10px; display: inline-block;">Clear Search</a>
             </div>
         </section>
-
+        
         <!-- Product Grid -->
         <section id="product-list" class="results-section">
             <div class="product-grid">
                 <!-- Dynamic DB products -->
                 <div class="product-card" th:each="product : ${products}" th:data-product-id="${product.id}" th:data-category="${#strings.toLowerCase(product.category.name)}" data-aos="fade-up">
-                    <div class="wishlist-icon"><i class="fa-regular fa-heart"></i></div>
+                    <div class="wishlist-icon">
+                        <i th:class="${wishlistIds != null and wishlistIds.contains(product.id)} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
+                           th:style="${wishlistIds != null and wishlistIds.contains(product.id)} ? 'color: #e74c3c' : ''"></i>
+                    </div>
                     <div class="product-image-container" th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}">
                         <a th:href="@{'/product/' + ${product.id}}">
                             <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image" onerror="this.closest('.product-image-container').style.display='none'">
@@ -69,10 +73,16 @@
                         <p class="product-category" th:text="${product.category.name}">Category</p>
                         <h3 class="product-title" th:text="${product.name}">Product Name</h3>
                         <p class="product-price" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹0.00</p>
-                        <form th:action="@{/cart/add}" method="post">
-                            <input type="hidden" name="productId" th:value="${product.id}">
-                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
-                        </form>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <form th:action="@{'/buy-now/' + ${product.id}}" method="post">
+                                <button type="submit" class="buy-now-btn">Buy Now</button>
+                            </form>
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
 
@@ -84,12 +94,6 @@
             </div>
         </section>
 
-        <style>
-            .active-filter {
-                border-bottom: 2px solid var(--text-primary);
-                padding-bottom: 5px;
-            }
-        </style>
     </main>
 </body>
 </html>

@@ -54,6 +54,18 @@ public class DesignChatController {
         }
     }
 
+    @PostMapping(value = "/send", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> sendUnified(@RequestParam Long sessionId, 
+                                         @RequestParam(required = false) String text, 
+                                         @RequestParam(required = false, name = "file") MultipartFile file) {
+        try {
+            DesignChatMessage chatMessage = chatService.sendCombinedMessage(sessionId, "USER", text, file);
+            return ResponseEntity.ok(Map.of("success", true, "message", chatMessage));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam Long sessionId, @RequestParam MultipartFile file) {
         try {

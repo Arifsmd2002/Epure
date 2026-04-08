@@ -59,12 +59,9 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(user);
         }
 
-        // Always update Minimalist Oak Dresser image to ensure the new user choice is reflected
-        productRepository.findByName("Minimalist Oak Dresser").forEach(p -> {
-            p.setImageUrl("/images/gallery/minimalist_oak_table_set.jpg");
-            productRepository.save(p);
-            System.out.println("DEBUG: Updated image for " + p.getName() + " with ID " + p.getId());
-        });
+        // Always re-initialize Storage products to ensure consistent data and avoid duplicates
+        Category storageCatAlways = categoryRepository.findByName("Storage").orElseGet(() -> categoryRepository.save(new Category("Storage")));
+        initializeStorage(storageCatAlways);
 
         // Always update Nordic Reading Nook moodboard image and products
         moodboardRepository.findFirstBySlug("nordic-reading-nook").ifPresent(m -> {
@@ -103,6 +100,12 @@ public class DataInitializer implements CommandLineRunner {
         Category sofasCat = categoryRepository.findByName("Sofas").orElseGet(() -> categoryRepository.save(new Category("Sofas")));
         initializeSofas(sofasCat);
 
+        Category bedsCat = categoryRepository.findByName("Beds").orElseGet(() -> categoryRepository.save(new Category("Beds")));
+        initializeBeds(bedsCat);
+
+        // Always re-link moodboard products to ensure the "Products in this Scene" section is populated
+        initializeMoodboardProductLinks();
+
         // Explicitly remove the Teal Velvet Pillow if it exists in the database
         productRepository.deleteByNameModifying("Teal Velvet Pillow");
 
@@ -115,7 +118,6 @@ public class DataInitializer implements CommandLineRunner {
             Category tables = categoryRepository.findByName("Tables").orElseGet(() -> categoryRepository.save(new Category("Tables")));
             Category wallArt = categoryRepository.findByName("Wall Art").orElseGet(() -> categoryRepository.save(new Category("Wall Art")));
             Category plants = categoryRepository.findByName("Plants").orElseGet(() -> categoryRepository.save(new Category("Plants")));
-            Category storage = categoryRepository.findByName("Storage").orElseGet(() -> categoryRepository.save(new Category("Storage")));
             Category pillows = categoryRepository.findByName("Pillows").orElseGet(() -> categoryRepository.save(new Category("Pillows")));
             
             Product lamp = productRepository.save(new Product("Nordic Table Lamp",
@@ -144,9 +146,7 @@ public class DataInitializer implements CommandLineRunner {
                 "A masterpiece of Nordic joinery, this chair features smooth curves and a grain-matched finish.",
                 new BigDecimal("890.00"), "/images/gallery/chair.png", seating, "Solid Ash Wood", "Sweden", 9, "minimal sculptural warm"));
 
-            Product dresser = productRepository.save(new Product("Minimalist Oak Dresser",
-                "Three spacious drawers with push-to-open functionality and a clean, handle-less silhouette.",
-                new BigDecimal("1450.00"), "/images/gallery/minimalist_oak_table_set.jpg", storage, "FSC White Oak", "Denmark", 8, "minimal storage functional"));
+            Product dresser = productRepository.findByName("Minimalist Oak Dresser").stream().findFirst().orElse(null);
 
             // Pillows are now initialized via a dedicated method below to ensure consistent pricing and re-initialization.
 
@@ -195,9 +195,9 @@ public class DataInitializer implements CommandLineRunner {
                 "An iconic silhouette offering a striking contrast to the olive and wood tones.",
                 new BigDecimal("750.00"), "https://images.unsplash.com/photo-1616628182506-6a3d6f6b8b32", seating, "Upholstered Steel Frame", "Denmark", 9, "red chair seating modern"));
 
-            Product cabinet = productRepository.save(new Product("Wooden Storage Cabinet",
-                "A handle-less, clean-lined cabinet in blonde oak for sophisticated organization.",
-                new BigDecimal("1150.00"), "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91", storage, "Solid Oak", "Sweden", 9, "storage wood oak cabinet"));
+            Product cabinet = productRepository.findByName("Wooden Storage Cabinet").stream().findFirst().orElse(null);
+
+            // Wooden Storage Cabinet now handled by initializeStorage()
 
             Product wallDecor = productRepository.save(new Product("Woven Wall Decor",
                 "Organic circular wall art that brings natural texture to the vertical plane.",
@@ -303,6 +303,21 @@ public class DataInitializer implements CommandLineRunner {
             oliveMood.setSlug("olive-living-room");
             moodboardRepository.save(oliveMood);
 
+            // New Emerald Dream Bedroom (Standardized 16:9)
+            Moodboard emeraldMood = moodboardRepository.findFirstBySlug("emerald-dream-bedroom")
+                .orElseGet(() -> new Moodboard("Emerald Dream Bedroom",
+                "A sophisticated sanctuary featuring deep emerald velvet textures and warm ambient lighting. Designed for ultimate rest and luxury.",
+                "/images/moodboards/moodboard_1.png"));
+            
+            emeraldMood.setSlug("emerald-dream-bedroom");
+            Set<Product> emeraldProducts = new HashSet<>();
+            productRepository.findByName("Forest Green Velvet Pillow").stream().findFirst().ifPresent(emeraldProducts::add);
+            productRepository.findByName("White Pendant Light").stream().findFirst().ifPresent(emeraldProducts::add);
+            productRepository.findByName("Emerald Velvet Dream Bed").stream().findFirst().ifPresent(emeraldProducts::add);
+            
+            emeraldMood.setProducts(emeraldProducts);
+            moodboardRepository.save(emeraldMood);
+
             // Cleanup any duplicate moodboards that might have been created
             cleanupDuplicateMoodboards();
 
@@ -322,6 +337,10 @@ public class DataInitializer implements CommandLineRunner {
             Category seatingCat = categoryRepository.findByName("Seating").orElseGet(() -> categoryRepository.save(new Category("Seating")));
             initializeSeating(seatingCat);
         }
+        
+        // Ensure Storage products are always correctly up-to-date (redundant call ensure cleanup run after setup if setup skipped)
+        Category storageAlwaysFinal = categoryRepository.findByName("Storage").orElseGet(() -> categoryRepository.save(new Category("Storage")));
+        initializeStorage(storageAlwaysFinal);
 
         // Always deduplicate and fix moodboard slugs on every startup
         cleanupDuplicateMoodboards();
@@ -551,27 +570,27 @@ public class DataInitializer implements CommandLineRunner {
         // 2. Insert Textile Products with Price Range ₹5000–₹6000
         productRepository.save(new Product("Nordic Shawl Collection",
             "A set of three premium wool shawls in complementary earth tones, perfect for styling over seating.",
-            new BigDecimal("5200.00"), "/images/gallery/shawls and chairs.png", textiles, "Recycled Wool", "Norway", 10, "warm cozy earth-tones", 4.8));
+            new BigDecimal("5200.00"), "/images/products/textiles/nordic_shawl.jpg", textiles, "Recycled Wool", "Norway", 10, "warm cozy earth-tones", 4.8));
 
         productRepository.save(new Product("Artisan Textile Bundle",
             "A curated mix of linen and cotton textiles, providing varied textures for a harmonious interior atmosphere.",
-            new BigDecimal("5450.00"), "/images/gallery/shawls,pillows.png", textiles, "Linen & Cotton Mix", "Belgium", 9, "minimal texture collection", 4.7));
+            new BigDecimal("5450.00"), "/images/products/textiles/artisan_bundle.jpg", textiles, "Linen & Cotton Mix", "Belgium", 9, "minimal texture collection", 4.7));
 
         productRepository.save(new Product("Mustard Throw Blanket",
             "Hand-woven lambswool throw in a deep ochre, adding warmth and texture.",
-            new BigDecimal("5800.00"), "https://images.unsplash.com/photo-1600369672770-985fd30004eb", textiles, "Lambswool", "Norway", 10, "yellow warm wool blanket", 4.9));
+            new BigDecimal("5800.00"), "/images/products/textiles/mustard_throw.jpg", textiles, "Lambswool", "Norway", 10, "yellow warm wool blanket", 4.9));
 
         productRepository.save(new Product("Organic Cotton Throw",
             "A soft, breathable throw made from 100% organic cotton, perfect for year-round comfort.",
-            new BigDecimal("5100.00"), "https://images.unsplash.com/photo-1580302212101-72c65a3bc593", textiles, "100% Organic Cotton", "Sweden", 9, "minimal natural soft", 4.8));
+            new BigDecimal("5100.00"), "/images/products/textiles/mint_throw.jpg", textiles, "100% Organic Cotton", "Sweden", 9, "minimal natural soft", 4.8));
 
         productRepository.save(new Product("Linen Table Runner",
             "Elegant linen table runner with hemstitch detail, bringing a touch of refinement to your dining space.",
-            new BigDecimal("5350.00"), "https://images.unsplash.com/photo-1544457070-4cd773b4d71e", textiles, "Stone-washed Linen", "Belgium", 8, "minimal dining elegant", 4.6));
+            new BigDecimal("5350.00"), "/images/products/textiles/table_runner.jpg", textiles, "Stone-washed Linen", "Belgium", 8, "minimal dining elegant", 4.6));
 
         productRepository.save(new Product("Woolen Blanket Set",
             "A duo of heavy-weight woolen blankets designed for the coldest winter nights.",
-            new BigDecimal("5950.00"), "https://images.unsplash.com/photo-1520032525096-7bd00a94c391", textiles, "Virgin Wool", "Norway", 10, "warm heavy cozy", 5.0));
+            new BigDecimal("5950.00"), "/images/products/textiles/blanket_set.jpg", textiles, "Virgin Wool", "Norway", 10, "warm heavy cozy", 5.0));
     }
 
     private void cleanupDuplicateMoodboards() {
@@ -654,6 +673,117 @@ public class DataInitializer implements CommandLineRunner {
         productRepository.save(new Product("Navy Deep Sea Sofa", "A deep navy blue sofa that serves as a grounding centerpiece.", new BigDecimal("34200.00"), "/images/products/sofas/navy_blue.png", sofas, "Structured Twill & Oak", "Norway", 9, "nordic bold calm", 4.9));
         productRepository.save(new Product("Dusty Rose Petal Sofa", "A delicate dusty pink sofa for a soft, contemporary aesthetic.", new BigDecimal("25400.00"), "/images/products/sofas/dusty_pink.png", sofas, "Chenille & Ash", "Sweden", 10, "modern soft warm", 4.8));
         productRepository.save(new Product("Warm Walnut Leather Sofa", "A premium brown leather sofa that gets better with age.", new BigDecimal("48000.00"), "/images/products/sofas/warm_brown.png", sofas, "Top-Grain Leather & Walnut", "Denmark", 7, "luxury vintage warm", 5.0));
+    }
+
+    private void initializeStorage(Category storage) {
+        // 1. Safe Cleanup of existing "Storage" products to avoid duplicates
+        productService.bulkDeleteByCategory("Storage");
+
+        // 2. Core Storage Products
+        productRepository.save(new Product("Minimalist Oak Dresser",
+            "Three spacious drawers with push-to-open functionality and a clean, handle-less silhouette.",
+            new BigDecimal("1450.00"), "/images/gallery/minimalist_oak_table_set.jpg", storage, "FSC White Oak", "Denmark", 8, "minimal storage functional", 4.8));
+
+        productRepository.save(new Product("Wooden Storage Cabinet",
+            "A handle-less, clean-lined cabinet in blonde oak for sophisticated organization.",
+            new BigDecimal("1150.00"), "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91", storage, "Solid Oak", "Sweden", 9, "storage wood oak cabinet", 4.7));
+            
+        productRepository.save(new Product("Nordic Slim Credenza",
+            "Sleek storage solution for minimalist dining or living areas.",
+            new BigDecimal("1850.00"), "https://images.unsplash.com/photo-1595428774223-ef5262412032", storage, "Ash Wood", "Norway", 9, "minimal storage sleek", 4.9));
+    }
+
+    private void initializeBeds(Category beds) {
+        // 1. Safe Cleanup of existing "Beds" products to avoid duplicates
+        productService.bulkDeleteByCategory("Beds");
+
+        // 2. New Premium Bed Products (March 30, 2026)
+        productRepository.save(new Product("Celestial Moon Round Bed",
+            "An avant-garde circular bed with an integrated moon-phase backlight and ultra-plush cushioning.",
+            new BigDecimal("68000.00"), "/images/products/beds/celestial_moon_bed.jpg", beds, "Italian Fabric & Carbon Fiber", "Italy", 9, "modern round celestial bed bright unique", 4.9));
+
+        productRepository.save(new Product("Lavender Dream Modern Bed",
+            "A futuristic purple-themed bed with sleek vertical LED lighting and premium grey upholstery.",
+            new BigDecimal("54000.00"), "/images/products/beds/lavender_dream_bed.png", beds, "Velvet & Steel", "Sweden", 10, "purple dream modern futuristic bed cozy", 4.8));
+
+        productRepository.save(new Product("Ivory Curved Sculptural Bed",
+            "A contemporary curved ivory bed with warm under-bed ambient lighting and a seamless headboard design.",
+            new BigDecimal("48000.00"), "/images/products/beds/ivory_curved_bed.png", beds, "Textured Fabric & Oak", "Denmark", 9, "ivory curved minimal warm organic bed", 4.7));
+
+        productRepository.save(new Product("Royal Purple Cloud Bed",
+            "A dramatic purple velvet bed with a lobed headboard and cloud-themed lighting for a whimsical, dreamy atmosphere.",
+            new BigDecimal("59000.00"), "/images/products/beds/royal_purple_velvet_bed.png", beds, "Premium Velvet & Beech", "France", 10, "purple royal cloud bed whimsy luxury", 4.9));
+
+        productRepository.save(new Product("Marshmallow Bubble Bed",
+            "A plush, tufted cream-colored bed with 'bubble' cushioning and soft glowing wave-like backlighting.",
+            new BigDecimal("52000.00"), "/images/products/beds/marshmallow_bubble_bed.png", beds, "Micro-fiber & Pine", "Sweden", 9, "cream bubble marshmallow bed soft chic", 4.8));
+
+        // 3. Core Collection Beds
+        productRepository.save(new Product("Emerald Velvet Dream Bed",
+            "A luxurious deep green velvet bed with a curved, padded headboard that defines modern luxury.",
+            new BigDecimal("45000.00"), "/images/products/beds/emerald_velvet_bed.png", beds, "Emerald Velvet & Pine", "Sweden", 10, "green luxury bedroom bed warm cozy relaxed", 5.0));
+
+        productRepository.save(new Product("Deep Purple Royal Bed",
+            "A statement circular bed in rich purple velvet, designed for a dramatic and regal bedroom atmosphere.",
+            new BigDecimal("52000.00"), "/images/products/beds/purple_velvet_round_bed.jpg", beds, "Premium Velvet & Oak", "France", 9, "purple royal round bed luxury warm cozy", 4.8));
+
+        productRepository.save(new Product("Starlight Cream Classic Bed",
+            "A timeless, elegant bed in soft cream upholstery with a tall tufted headboard and gold accents.",
+            new BigDecimal("42000.00"), "/images/products/beds/royal_beige_bed.jpg", beds, "High-grade Linen & Gold-leaf Wood", "Denmark", 10, "cream classic elegant bedroom bright neutral", 4.9));
+    }
+
+    private void initializeMoodboardProductLinks() {
+        // Stockholm Morning Set
+        moodboardRepository.findFirstBySlug("stockholm-morning-set").ifPresent(m -> {
+            Set<Product> products = new HashSet<>();
+            String[] names = {"Nordic Table Lamp", "Minimal Ceramic Vase", "Oak Coffee Table", "Linen Modular Sofa", "Ash Wood Sculptural Chair", "Minimalist Oak Dresser", "Aesthetic Design Collection", "Indoor Olive Tree", "Nordic Abstract Print"};
+            for (String name : names) {
+                productRepository.findByName(name).stream().findFirst().ifPresent(products::add);
+            }
+            if (!products.isEmpty()) {
+                m.setProducts(products);
+                moodboardRepository.save(m);
+            }
+        });
+
+        // Nordic Living Sanctuary
+        moodboardRepository.findFirstBySlug("nordic-living-sanctuary").ifPresent(m -> {
+            Set<Product> products = new HashSet<>();
+            String[] names = {"Linen Modular Sofa", "Beige Lounge Chair", "Oak Coffee Table", "Forest Green Velvet Pillow", "Nordic Shawl Collection", "Scandinavian Living Ensemble", "Natural Woven Pillow", "Artisan Textile Bundle"};
+            for (String name : names) {
+                productRepository.findByName(name).stream().findFirst().ifPresent(products::add);
+            }
+            if (!products.isEmpty()) {
+                m.setProducts(products);
+                moodboardRepository.save(m);
+            }
+        });
+
+        // Nordic Reading Nook
+        moodboardRepository.findFirstBySlug("nordic-reading-nook").ifPresent(m -> {
+            Set<Product> products = new HashSet<>();
+            String[] names = {"Beige Lounge Chair", "Nordic Table Lamp", "Oak Coffee Table", "Minimal Ceramic Vase", "Nordic Abstract Print", "Nordic Reading Ensemble", "Ash Wood Sculptural Chair", "Nordic Shawl Collection", "Natural Woven Pillow"};
+            for (String name : names) {
+                productRepository.findByName(name).stream().findFirst().ifPresent(products::add);
+            }
+            if (!products.isEmpty()) {
+                m.setProducts(products);
+                moodboardRepository.save(m);
+            }
+        });
+
+        // Olive Living Room
+        moodboardRepository.findFirstBySlug("olive-living-room").ifPresent(m -> {
+            Set<Product> products = new HashSet<>();
+            String[] names = {"Olive Modular Sofa", "Red Accent Pillow", "Beige Cushion Pillow", "Mustard Throw Blanket", "Black Round Coffee Table", "Red Lounge Chair", "Wooden Storage Cabinet", "Woven Wall Decor", "White Pendant Light", "Indoor Olive Tree Plant"};
+            for (String name : names) {
+                productRepository.findByName(name).stream().findFirst().ifPresent(products::add);
+            }
+            if (!products.isEmpty()) {
+                m.setProducts(products);
+                moodboardRepository.save(m);
+            }
+        });
     }
 }
 
